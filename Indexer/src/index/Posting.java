@@ -6,12 +6,13 @@ public class Posting {
 
     // this is a class that stores freq/pos of a term for a document
 
-    private int docId;
-    private int termFrequency;
+    private String docId;
+    int termFrequency; // frequency of the term in this doc
     private ArrayList<Integer> positions;
-    
-    public void Posting(int id) {
+
+    public void Posting(String id) {
         docId = id;
+        termFrequency = 0;
         positions = new ArrayList<Integer>();
     }
 
@@ -20,7 +21,11 @@ public class Posting {
         positions.add(pos);
     }
     // we don't really support removing a position so "add" is pretty much it
-    
+
+    public String getDocId() {
+        return docId;
+    }
+
     public int getTermFrequency() {
         return termFrequency;
     }

@@ -6,7 +6,8 @@ public class Scene extends Document {
     private int sceneNum;
 
     public Scene(String pId, String sId, int sNum, String text) {
-        super(text); // term vector created
+        // playId + scneId is going to be our document id
+        super(pId + sId, text); // term vector created
         playId = pId;
         sceneId = sId;
         sceneNum = sNum;
