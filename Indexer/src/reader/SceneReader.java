@@ -10,16 +10,18 @@ import org.apache.commons.io.IOUtils;
 
 import org.json.*;
 
-public class JsonReader {
+public class SceneReader extends Reader {
 
-    private String filename = null;
     private JSONObject jsonObject = null;
 
-    public JsonReader(String fname) {
-        filename = fname;
+    public SceneReader(String fname) {
+        super(fname);
+    }
+
+    public void read() {
         InputStream is;
         try {
-            is = new FileInputStream(fname);
+            is = new FileInputStream(this.filename);
             String jsonTxt = IOUtils.toString(is, "UTF-8");
             jsonObject = new JSONObject(jsonTxt);
 
@@ -28,7 +30,6 @@ public class JsonReader {
             Iterator<Object> corpusIterator = corpus.iterator();
 
             while (corpusIterator.hasNext()) {
-                // System.out.println(i + " " + corpusIterator.next());
                 // we are going through each scene in the corpus.
                 JSONObject scene = (JSONObject) corpusIterator.next();
 
@@ -38,6 +39,7 @@ public class JsonReader {
                 String sceneText = (String) scene.get("text");
 
                 Scene currentScene = new Scene(playId, sceneId, sceneNum, sceneText);
+                putIntoDocumentList(currentScene);
                 System.out.println(sceneNum + ": There are " + currentScene.getTermVector().length + " in this scene");
             }
         } catch (FileNotFoundException e) {
