@@ -2,6 +2,7 @@ package index;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map.Entry;
 
 public class InvertedList {
 
@@ -17,37 +18,37 @@ public class InvertedList {
     // The key is the unique identifier for doc. String because it accommodates most
     // docIds. If passing integers, convert to String first.
     // the value is the index in which this docId is added to list
-    HashMap<String, Integer> postingLookup;
-
-    // List of Postings
-    ArrayList<Posting> postings;
+    HashMap<Integer, Posting> postings;
 
     public InvertedList(String s) {
         term = s;
-        postings = new ArrayList<Posting>();
+        postings = new HashMap<Integer, Posting>();
         numDocs = 0;
     }
 
-    public void addPosting(Posting p) {
-        postings.add(p);
-        postingLookup.put(p.getDocId(), numDocs); // numDocs is the index at which this doc is placed
-        numDocs++;
-    }
-
-    public int isPostingInList(String docId) {
-        if (postingLookup.containsKey(docId)) {
-            return postingLookup.get(docId);
+    public void addPositionToPosting(int docId, int position) {
+        Posting posting = null;
+        if (postings.containsKey(docId)) {
+            posting = postings.get(docId);
+        } else {
+            posting = new Posting(docId);
+            numDocs++;
         }
-        return -1;
-    }
-
-    public void addPositionToPosting(int docIndex, int position) {
-        Posting posting = postings.get(docIndex);
         posting.addPosition(position);
+        postings.put(docId, posting);
     }
 
-    public void writeSelfToDisk() {
+    /*
+     * public ArrayList<Bytes> getByteBuffer(boolean compress) { for (Entry<String,
+     * Posting> posting : postings.entrySet()) { if (compress) { ArrayList<Integer>
+     * toWrite = posting.getByteBuffer(compress); } } }
+     */
 
+    public void printSelf() {
+        System.out.println(term);
+        for (Entry<Integer, Posting> pos : postings.entrySet()) {
+            pos.getValue().printSelf();
+        }
     }
 
 }

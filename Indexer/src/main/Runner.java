@@ -15,6 +15,7 @@ public class Runner {
             // create an index
             InvertedFileIndex index = new InvertedFileIndex();
             index.createIndexFromDocumentStore(sceneReader.getDocuments());
+            index.printSelf();
         }
     }
 }

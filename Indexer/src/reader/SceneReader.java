@@ -25,7 +25,7 @@ public class SceneReader extends Reader {
             String jsonTxt = IOUtils.toString(is, "UTF-8");
             jsonObject = new JSONObject(jsonTxt);
 
-            // directly go for the corpus key
+            // directly go for the "corpus" key
             JSONArray corpus = (JSONArray) jsonObject.get("corpus");
             Iterator<Object> corpusIterator = corpus.iterator();
 
