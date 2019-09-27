@@ -1,6 +1,7 @@
 package index;
 
 import java.util.ArrayList;
+import java.util.Map.Entry;
 
 public class Posting {
 
@@ -30,7 +31,7 @@ public class Posting {
         return termFrequency;
     }
 
-    public ArrayList<Integer> deltaEncodeSelf() {
+    private ArrayList<Integer> deltaEncodeSelf() {
         if (termFrequency > 0) {
             ArrayList<Integer> encoding = new ArrayList<Integer>();
             encoding.add(positions.get(0));
@@ -42,12 +43,23 @@ public class Posting {
         return null;
     }
 
-    /*
-     * public ArrayList<Byte> getByteBuffer(boolean compress) { ArrayList<Byte>
-     * byteArray = new ArrayList<Byte>(); byteArray.add(e) for() {
-     * 
-     * } return byteArray; }
-     */
+    public ArrayList<Integer> getPosting(boolean compress) {
+        ArrayList<Integer> result = new ArrayList<Integer>();
+
+        // first add the doc id
+        result.add(docId);
+
+        // then add the term frequency in this document
+        result.add(termFrequency);
+
+        if (compress) {
+            result.addAll(deltaEncodeSelf());
+        } else {
+            result.addAll(positions);
+        }
+
+        return result;
+    }
 
     public void printSelf() {
         System.out.println("Posting " + docId + ": " + positions);

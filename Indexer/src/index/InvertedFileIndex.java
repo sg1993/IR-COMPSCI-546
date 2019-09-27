@@ -36,8 +36,8 @@ public class InvertedFileIndex {
     }
 
     public void writeSelfToDisk(String filename, boolean compress) {
-        for(Entry<String, InvertedList> list : invListLookup.entrySet()) {
-            //list.getByteBuffer(compress);
+        for (Entry<String, InvertedList> list : invListLookup.entrySet()) {
+            // list.getByteBuffer(compress);
         }
     }
 

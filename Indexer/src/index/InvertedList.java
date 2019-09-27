@@ -38,11 +38,13 @@ public class InvertedList {
         postings.put(docId, posting);
     }
 
-    /*
-     * public ArrayList<Bytes> getByteBuffer(boolean compress) { for (Entry<String,
-     * Posting> posting : postings.entrySet()) { if (compress) { ArrayList<Integer>
-     * toWrite = posting.getByteBuffer(compress); } } }
-     */
+    public ArrayList<Integer> getList(boolean compress) {
+        ArrayList<Integer> result = new ArrayList<Integer>();
+        for (Entry<Integer, Posting> posting : postings.entrySet()) {
+            result.addAll(posting.getValue().getPosting(compress));
+        }
+        return result;
+    }
 
     public void printSelf() {
         System.out.println(term);
