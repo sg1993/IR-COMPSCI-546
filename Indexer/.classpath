@@ -8,5 +8,6 @@
 	</classpathentry>
 	<classpathentry kind="lib" path="C:/Users/georg/motherlode/UMass/cs546/IR-COMPSCI-546/Indexer/lib/json-20190722.jar"/>
 	<classpathentry kind="lib" path="C:/Users/georg/motherlode/UMass/cs546/IR-COMPSCI-546/Indexer/lib/commons-io-2.5.jar"/>
+	<classpathentry kind="lib" path="C:/Users/georg/motherlode/UMass/cs546/IR-COMPSCI-546/Indexer/lib/commons-cli-1.4.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
