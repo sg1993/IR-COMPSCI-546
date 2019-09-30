@@ -14,7 +14,7 @@ public class InvertedList {
 
     // how many docs soes this term appear in?
     private int numDocs;
-    
+
     // count of occurrence across all docs
     private int collectionFrequency;
 
@@ -51,13 +51,27 @@ public class InvertedList {
         }
         return result;
     }
-    
+
     public int getDocumentFrequency() {
         return numDocs;
     }
-    
+
     public int getCollectionFrequency() {
         return collectionFrequency;
+    }
+
+    private HashMap<Integer, Posting> getPostings() {
+        return postings;
+    }
+
+    public static boolean compareTwoInvertedLists(InvertedList l1, InvertedList l2) {
+        for (Entry<Integer, Posting> entry : l1.getPostings().entrySet()) {
+            Integer docId = entry.getKey();
+            if (!Posting.compareTwoPostings(entry.getValue(), l2.getPostings().get(docId))) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public void printSelf() {
@@ -66,5 +80,4 @@ public class InvertedList {
             pos.getValue().printSelf();
         }
     }
-
 }

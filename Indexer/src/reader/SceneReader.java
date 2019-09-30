@@ -7,8 +7,8 @@ import java.io.InputStream;
 import java.util.Iterator;
 
 import org.apache.commons.io.IOUtils;
-
-import org.json.*;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 public class SceneReader extends Reader {
 
@@ -40,8 +40,6 @@ public class SceneReader extends Reader {
 
                 Scene currentScene = new Scene(playId, sceneId, sceneNum, sceneText);
                 putIntoDocumentList(currentScene);
-                System.out.println(sceneNum + ": There are " + currentScene.getTermVector().length
-                        + " in this scene");
             }
         } catch (FileNotFoundException e) {
             // TODO Auto-generated catch block

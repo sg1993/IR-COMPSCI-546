@@ -17,7 +17,6 @@ public class VByteEncoder {
                 i >>>= 7;
             }
             bos.write((byte) (i | 0x80));
-            System.out.println("written " + bos.size());
         }
         return bos.toByteArray();
     }

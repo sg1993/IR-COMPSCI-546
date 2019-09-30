@@ -61,6 +61,28 @@ public class Posting {
     }
 
     public void printSelf() {
-        System.out.println("Posting " + docId + ": " + positions);
+        System.out.println("Posting " + docId + ": [" + termFrequency + "] = " + positions);
+    }
+
+    public static boolean compareTwoPostings(Posting p1, Posting p2) {
+        ArrayList<Integer> pos1 = p1.getPositions(), pos2 = p2.getPositions();
+
+        if (p1.getDocId() != p2.getDocId())
+            return false;
+
+        if (pos1.size() != pos2.size())
+            return false;
+
+        for (int i = 0; i < pos1.size(); i++) {
+            if (!pos1.get(i).equals(pos2.get(i)))
+                return false;
+
+        }
+
+        return true;
+    }
+
+    private ArrayList<Integer> getPositions() {
+        return positions;
     }
 }

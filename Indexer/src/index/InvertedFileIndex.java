@@ -94,7 +94,6 @@ public class InvertedFileIndex {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        System.out.println("Wrote " + toWrite.length + " to file");
         return toWrite.length;
     }
 
@@ -110,8 +109,6 @@ public class InvertedFileIndex {
             // the offset files have .ttol extension
             PrintWriter termToOffsetLookupFile = new PrintWriter(indexFileNameString + ".ttol");
 
-            int totalBytesWritten = 0;
-
             // move raf to the beginning of the file every time before writing an index
             binaryFile.seek(0);
             binaryFile.setLength(0); // truncate any existing content
@@ -120,6 +117,8 @@ public class InvertedFileIndex {
                 binaryFile.write('C');
             else
                 binaryFile.write('U');
+
+            long totalBytesWritten = binaryFile.length();
 
             for (Entry<String, InvertedList> list : invListLookup.entrySet()) {
                 InvertedList temp = list.getValue();
@@ -153,15 +152,36 @@ public class InvertedFileIndex {
         if (compressed) {
             list = VByteEncoder.decodeIntegerList(buffer);
         } else {
-            //
+            int i = 0, l = buffer.length, value = 0;
+            list = new ArrayList<Integer>();
+            while (i < l) {
+                for (int j = 0; j < 4; j++) {
+                    int shift = (4 - 1 - j) * 8;
+                    value += (buffer[i + j] & 0x000000FF) << shift;
+                }
+                list.add(value);
+
+                // move to the next 4 bytes
+                i += 4;
+                value = 0;
+            }
         }
 
         int index, len = list.size();
         for (index = 0; index < len;) {
-            int docId = list.get(index++);
-            int tf = list.get(index++);
+            int docId = list.get(index);
+            index++;
+            int tf = list.get(index);
+            index++;
+            int prevPosition = 0;
             for (int i = 0; i < tf; i++) {
-                int position = list.get(index++);
+                int position = list.get(index);
+                index++;
+                if (compressed) {
+                    position += prevPosition;
+                    prevPosition = position;
+                }
+
                 invertedList.addPositionToPosting(docId, position);
             }
         }
@@ -206,22 +226,24 @@ public class InvertedFileIndex {
             }
         }
 
-        System.out.println(termToOffsetMap);
+        // System.out.println(termToOffsetMap);
     }
 
     public void createCompleteIndexFromDisk() {
         // open RAF and lookup-table reader
         try {
             loadLookupTable();
+
             // at this point, we have map of term to offset/df/cf
             // we can start creating the in-memory index from the the index file
             binaryFile = new RandomAccessFile(indexFileNameString, "r");
             binaryFile.seek(0);
-            int previousTermOffset = 0;
 
             // read the first byte to find out if this is uncompressed or compressed index
             boolean compressed = (binaryFile.readByte() == 'C');
 
+            // set previous term's offset to 1 since we have already read one byte
+            int previousTermOffset = 1;
             for (Entry<String, Integer> entry : termToOffsetMap.entrySet()) {
                 String term = entry.getKey();
                 int endOffset = entry.getValue();
@@ -232,7 +254,7 @@ public class InvertedFileIndex {
                 binaryFile.read(buffer, 0, bytesToRead);
 
                 InvertedList l = constructInvertedList(compressed, buffer, term);
-                l.printSelf();
+                // l.printSelf();
                 invListLookup.put(term, l);
 
                 // update previous term's offset with the current one
@@ -255,19 +277,30 @@ public class InvertedFileIndex {
             entry.getValue().printSelf();
         }
     }
-    
-    private HashMap<String, InvertedList> getInvertedLists(){
+
+    private HashMap<String, InvertedList> getInvertedLists() {
         return invListLookup;
     }
 
-    public static boolean compareTwoIndexes(InvertedFileIndex index1, InvertedFileIndex index2) {
+    public static boolean compareTwoInvertedIndexes(InvertedFileIndex index1,
+            InvertedFileIndex index2) {
         // this is just a quick check
         int size1 = index1.getInvertedLists().size();
         int size2 = index2.getInvertedLists().size();
-        
-        if(size1==size2) {
-            System.out.println("Both indexes have same number of inverted lists, i.e. " + size1);
+
+        if (size1 != size2)
+            return false;
+
+        for (Entry<String, InvertedList> entry : index1.getInvertedLists().entrySet()) {
+            String key = entry.getKey();
+            if (!InvertedList.compareTwoInvertedLists(entry.getValue(),
+                    index2.getInvertedLists().get(key))) {
+                return false;
+            }
         }
-        return false;
+
+        System.out.println("All terms in both indexes have the same Postings");
+
+        return true;
     }
 }
