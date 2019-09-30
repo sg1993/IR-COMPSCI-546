@@ -12,7 +12,11 @@ public class InvertedList {
     // We probably don't need to store the term itself here, but anyways..
     String term;
 
+    // how many docs soes this term appear in?
     private int numDocs;
+    
+    // count of occurrence across all docs
+    private int collectionFrequency;
 
     // Hashmap for quick lookup whether a doc-posting is already present
     // The key is the unique identifier for doc. String because it accommodates most
@@ -24,6 +28,7 @@ public class InvertedList {
         term = s;
         postings = new HashMap<Integer, Posting>();
         numDocs = 0;
+        collectionFrequency = 0;
     }
 
     public void addPositionToPosting(int docId, int position) {
@@ -36,6 +41,7 @@ public class InvertedList {
         }
         posting.addPosition(position);
         postings.put(docId, posting);
+        collectionFrequency++;
     }
 
     public ArrayList<Integer> getList(boolean compress) {
@@ -44,6 +50,14 @@ public class InvertedList {
             result.addAll(posting.getValue().getPosting(compress));
         }
         return result;
+    }
+    
+    public int getDocumentFrequency() {
+        return numDocs;
+    }
+    
+    public int getCollectionFrequency() {
+        return collectionFrequency;
     }
 
     public void printSelf() {

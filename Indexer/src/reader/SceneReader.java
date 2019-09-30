@@ -40,7 +40,8 @@ public class SceneReader extends Reader {
 
                 Scene currentScene = new Scene(playId, sceneId, sceneNum, sceneText);
                 putIntoDocumentList(currentScene);
-                System.out.println(sceneNum + ": There are " + currentScene.getTermVector().length + " in this scene");
+                System.out.println(sceneNum + ": There are " + currentScene.getTermVector().length
+                        + " in this scene");
             }
         } catch (FileNotFoundException e) {
             // TODO Auto-generated catch block

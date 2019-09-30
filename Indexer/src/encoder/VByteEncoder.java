@@ -1,7 +1,6 @@
 package encoder;
 
 import java.io.ByteArrayOutputStream;
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
 
 public class VByteEncoder {
