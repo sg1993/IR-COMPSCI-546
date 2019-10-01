@@ -31,6 +31,10 @@ public class InvertedList {
         collectionFrequency = 0;
     }
 
+    public String getTerm() {
+        return term;
+    }
+
     public void addPositionToPosting(int docId, int position) {
         Posting posting = null;
         if (postings.containsKey(docId)) {
@@ -60,7 +64,7 @@ public class InvertedList {
         return collectionFrequency;
     }
 
-    private HashMap<Integer, Posting> getPostings() {
+    public HashMap<Integer, Posting> getPostings() {
         return postings;
     }
 

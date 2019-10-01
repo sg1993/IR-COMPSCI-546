@@ -10,6 +10,7 @@ public class Document {
     // This is the DocumentId of the backing sub-class
     // For instance, Document super-class could be backed by a Scene class
     // which can have (playId + SceneId) as its unique String id.
+    @SuppressWarnings("unused")
     private String backingDocumentId;
 
     private String[] termVector;

@@ -3,6 +3,7 @@ package reader;
 public class Scene extends Document {
 
     private String playId, sceneId;
+    @SuppressWarnings("unused")
     private int sceneNum;
 
     public Scene(String pId, String sId, int sNum, String text) {

@@ -22,7 +22,7 @@ import reader.Document;
  * 2) create an in-memory index from a file on disk.
  */
 
-public class InvertedFileIndex {
+public class InvertedFileIndex extends Index {
 
     // the inverted index file on disk
     private RandomAccessFile binaryFile = null;
@@ -35,18 +35,22 @@ public class InvertedFileIndex {
 
     // This map will be loaded from the lookup file
     // when you want to reconstruct the index from disk.
-    // note that the offset here is where the list for a term ENDS, NOT BEGINS
-    private LinkedHashMap<String, Integer> termToOffsetMap;
+    // note that the offset here is where the list for a term BEGINS
+    private LinkedHashMap<String, Integer> termToOffsetMap = null;
 
     // Map of term to Document-frequency
     // will be constructed from the index file on disk
-    private HashMap<String, Integer> termtoDFMap;
+    private HashMap<String, Integer> termtoDFMap = null;
 
     // Map of term to Collection-frequency
     // will be constructed from the index file on disk
-    private HashMap<String, Integer> termtoCFMap;
+    private HashMap<String, Integer> termtoCFMap = null;
+
+    // Map of term to the number of bytes to read for this term
+    private HashMap<String, Integer> termToReadBytesMap = null;
 
     public InvertedFileIndex(String filename) {
+        super();
         invListLookup = new HashMap<String, InvertedList>();
         indexFileNameString = filename;
     }
@@ -122,21 +126,24 @@ public class InvertedFileIndex {
 
             for (Entry<String, InvertedList> list : invListLookup.entrySet()) {
                 InvertedList temp = list.getValue();
-                if (compress)
-                    totalBytesWritten += writeCompressed(temp.getList(compress));
-                else
-                    totalBytesWritten += writeUncompressed(temp.getList(compress));
 
                 // write this term's offset in the index into the lookup table
                 writeLookupEntry(termToOffsetLookupFile, list.getKey(), totalBytesWritten,
                         temp.getDocumentFrequency(), temp.getCollectionFrequency());
+
+                if (compress)
+                    totalBytesWritten += writeCompressed(temp.getList(compress));
+                else
+                    totalBytesWritten += writeUncompressed(temp.getList(compress));
             }
 
             // System.out.println("Total bytes written to disk: " + totalBytesWritten);
 
             // close all files on disk
             binaryFile.close();
+            binaryFile = null;
             termToOffsetLookupFile.close();
+            termToOffsetLookupFile = null;
 
         } catch (IOException e) {
             // TODO Auto-generated catch block
@@ -144,7 +151,8 @@ public class InvertedFileIndex {
         }
     }
 
-    private InvertedList constructInvertedList(boolean compressed, byte[] buffer, String term) {
+    private InvertedList constructInvertedListFromByteArray(boolean compressed, byte[] buffer,
+            String term) {
 
         ArrayList<Integer> list = null;
         InvertedList invertedList = new InvertedList(term);
@@ -153,6 +161,7 @@ public class InvertedFileIndex {
             list = VByteEncoder.decodeIntegerList(buffer);
         } else {
             int i = 0, l = buffer.length, value = 0;
+            // System.out.println("buf len: " + l);
             list = new ArrayList<Integer>();
             while (i < l) {
                 for (int j = 0; j < 4; j++) {
@@ -168,6 +177,7 @@ public class InvertedFileIndex {
         }
 
         int index, len = list.size();
+        // System.out.println(list);
         for (index = 0; index < len;) {
             int docId = list.get(index);
             index++;
@@ -178,6 +188,7 @@ public class InvertedFileIndex {
                 int position = list.get(index);
                 index++;
                 if (compressed) {
+                    // delta decoding
                     position += prevPosition;
                     prevPosition = position;
                 }
@@ -195,12 +206,13 @@ public class InvertedFileIndex {
                 BufferedReader termToOffsetLookupFile = new BufferedReader(
                         new FileReader(indexFileNameString + ".ttol"));
 
-                // contruct the term-offset lookup table first
+                // construct the term-offset lookup table first
                 // first add the entries from the file into a List.
                 String line;
                 List<Entry<String, Integer>> list = new ArrayList<Entry<String, Integer>>();
                 termtoDFMap = new HashMap<String, Integer>();
                 termtoCFMap = new HashMap<String, Integer>();
+                termToReadBytesMap = new HashMap<String, Integer>();
 
                 while ((line = termToOffsetLookupFile.readLine()) != null) {
                     String[] terms = line.split("\\s+");
@@ -215,18 +227,42 @@ public class InvertedFileIndex {
                 // at this point, the List has entries in sorted order of offset-values
                 // we now create a LinkedHashMap out of this list.
                 // LinkedHashMap is used so that we fix the order
-                // of keys unlike HashMap which has arbitrary order
+                // of keys unlike HashMap which has arbitrary order.
                 termToOffsetMap = new LinkedHashMap<String, Integer>();
-                for (Entry<String, Integer> entry : list) {
-                    termToOffsetMap.put(entry.getKey(), entry.getValue());
+
+                // put in first entry's start offset
+                termToOffsetMap.put(list.get(0).getKey(), list.get(0).getValue());
+
+                int i, bytesToRead;
+                Entry<String, Integer> curEntry, prevEntry = list.get(0);
+                for (i = 1; i < list.size(); i++) {
+                    curEntry = list.get(i);
+                    termToOffsetMap.put(curEntry.getKey(), curEntry.getValue());
+                    bytesToRead = curEntry.getValue() - prevEntry.getValue();
+                    termToReadBytesMap.put(prevEntry.getKey(), bytesToRead);
+                    prevEntry = curEntry;
                 }
+
+                // compute how many bytes to read for the last erm
+                // this should be the 'length of the index file' - 'start offset of term in the
+                // index' + 1
+                binaryFile = new RandomAccessFile(indexFileNameString, "r");
+                bytesToRead = (int) (binaryFile.length() - prevEntry.getValue());
+                termToReadBytesMap.put(prevEntry.getKey(), bytesToRead);
+
+                binaryFile.close();
+                binaryFile = null;
+                termToOffsetLookupFile.close();
+                termToOffsetLookupFile = null;
+
+                // System.out.println(termToOffsetMap);
+                // System.out.println(termToReadBytesMap);
+
             } catch (NumberFormatException | IOException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
         }
-
-        // System.out.println(termToOffsetMap);
     }
 
     public void createCompleteIndexFromDisk() {
@@ -234,7 +270,7 @@ public class InvertedFileIndex {
         try {
             loadLookupTable();
 
-            // at this point, we have map of term to offset/df/cf
+            // at this point, we have map of term to offset/df/cf/bytesToRead
             // we can start creating the in-memory index from the the index file
             binaryFile = new RandomAccessFile(indexFileNameString, "r");
             binaryFile.seek(0);
@@ -242,24 +278,22 @@ public class InvertedFileIndex {
             // read the first byte to find out if this is uncompressed or compressed index
             boolean compressed = (binaryFile.readByte() == 'C');
 
-            // set previous term's offset to 1 since we have already read one byte
-            int previousTermOffset = 1;
             for (Entry<String, Integer> entry : termToOffsetMap.entrySet()) {
                 String term = entry.getKey();
-                int endOffset = entry.getValue();
 
-                // read "endOffset - previousTermOffset" bytes
-                int bytesToRead = endOffset - previousTermOffset;
+                // look up the termToReadBytesMap table to find how may bytes to
+                // read for this term.
+                int bytesToRead = termToReadBytesMap.get(term);
                 byte[] buffer = new byte[bytesToRead];
                 binaryFile.read(buffer, 0, bytesToRead);
 
-                InvertedList l = constructInvertedList(compressed, buffer, term);
+                InvertedList l = constructInvertedListFromByteArray(compressed, buffer, term);
                 // l.printSelf();
                 invListLookup.put(term, l);
-
-                // update previous term's offset with the current one
-                previousTermOffset = endOffset;
             }
+
+            binaryFile.close();
+            binaryFile = null;
 
         } catch (FileNotFoundException e) {
             // TODO Auto-generated catch block
@@ -273,7 +307,6 @@ public class InvertedFileIndex {
 
     public void printSelf() {
         for (Entry<String, InvertedList> entry : invListLookup.entrySet()) {
-            // System.out.println("List");
             entry.getValue().printSelf();
         }
     }
@@ -284,6 +317,7 @@ public class InvertedFileIndex {
 
     public static boolean compareTwoInvertedIndexes(InvertedFileIndex index1,
             InvertedFileIndex index2) {
+
         // this is just a quick check
         int size1 = index1.getInvertedLists().size();
         int size2 = index2.getInvertedLists().size();
@@ -299,8 +333,52 @@ public class InvertedFileIndex {
             }
         }
 
-        System.out.println("All terms in both indexes have the same Postings");
+        System.out.println(
+                "All terms in both indexes have the same InvertedLists and the associated Postings.");
 
         return true;
+    }
+
+    public InvertedList getInvertedListForTerm(String term) {
+
+        boolean compressed = false;
+
+        // load the lookup table if not already done
+        if (termToOffsetMap == null) {
+            loadLookupTable();
+        }
+
+        try {
+            if (binaryFile == null)
+                binaryFile = new RandomAccessFile(indexFileNameString, "r");
+            binaryFile.seek(0);
+
+            // read the first byte to find out if this is uncompressed or compressed index
+            compressed = (binaryFile.readByte() == 'C');
+
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        // look up the termToReadBytesMap table to find how may bytes to
+        // read for this term.
+        if (!termToOffsetMap.containsKey(term)) {
+            // term not present in index
+            return null;
+        }
+
+        int bytesToRead = termToReadBytesMap.get(term);
+        byte[] buffer = new byte[bytesToRead];
+
+        try {
+            binaryFile.seek(termToOffsetMap.get(term));
+            binaryFile.read(buffer, 0, bytesToRead);
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        return constructInvertedListFromByteArray(compressed, buffer, term);
     }
 }
