@@ -19,11 +19,20 @@ public class DocAtATimeRetriever extends Retriever {
 
     // Doc at a time retriever needs to know number of documents
     // so just to be on the safe side, keep the document-store itself.
+    @SuppressWarnings("unused")
     private ArrayList<Document> documents;
+
+    // number of docs; the retriver will iterate over 0 to numDocs
+    private int numDocs = 0;
 
     public DocAtATimeRetriever(Index i, ArrayList<Document> docs) {
         super(i);
         documents = docs;
+    }
+
+    public DocAtATimeRetriever(Index i, int n) {
+        super(i);
+        numDocs = n;
     }
 
     @Override
@@ -41,7 +50,6 @@ public class DocAtATimeRetriever extends Retriever {
                         }
                         return 0;
                     }
-
                 });
 
         // list of InvertedLists for each query term
@@ -60,11 +68,9 @@ public class DocAtATimeRetriever extends Retriever {
             invertedLists.add(list);
         }
 
-        int numDocs = documents.size();
-
         // iterate through each document
         for (int i = 0; i < numDocs; i++) {
-            int docId = documents.get(i).getDocumentUniqueId();
+            int docId = i;
             Double curDocScore = 0.0;
 
             // check each term's I-List and accumulate the score for this doc
@@ -72,12 +78,10 @@ public class DocAtATimeRetriever extends Retriever {
                 HashMap<Integer, Posting> postings = iList.getPostings();
                 if (postings.containsKey(docId)) {
                     // we have the term in this doc
-                    // ad the raw-count to this doc's score
+                    // add the raw-count to this doc's score
                     curDocScore += postings.get(docId).getTermFrequency();
                 }
             }
-            if (curDocScore > 0)
-                System.out.println("Score of " + docId + ": " + curDocScore);
 
             if (curDocScore != 0)
                 priorityQueue.add(
@@ -88,10 +92,8 @@ public class DocAtATimeRetriever extends Retriever {
 
         int i = 0;
         while (!priorityQueue.isEmpty() && i < k) {
-
             Entry<Integer, Double> entry = priorityQueue.poll();
             entry.setValue(-1 * entry.getValue());
-            System.out.println(entry.toString());
             result.add(entry);
             i++;
         }
@@ -99,4 +101,80 @@ public class DocAtATimeRetriever extends Retriever {
         return result;
     }
 
+    @Override
+    public double computeDiceCoefficient(String term1, String term2) {
+
+        // conjunctive doc-at-a-time retrieval to compute Dice's coefficient
+        // strict ordering - term1 must appear just before term2 to qualify
+        // for dice's coefficient score
+
+        // InvertedLists for the two query terms
+        InvertedList l1 = ((InvertedFileIndex) index).getInvertedListForTerm(term1);
+        InvertedList l2 = ((InvertedFileIndex) index).getInvertedListForTerm(term2);
+
+        // how many times does termA appear in the entire collection
+        double countA = l1.getCollectionFrequency();
+
+        // how many times does termA appear in the entire collection
+        double countB = l2.getCollectionFrequency();
+
+        // compute how many times does termA just precedes termB
+        // (consecutive occurrence in a document)
+
+        double countAB = 0;
+        for (Entry<Integer, Posting> entry : l1.getPostings().entrySet()) {
+            int docId = entry.getKey();
+            Posting p = entry.getValue();
+
+            HashMap<Integer, Posting> entry2 = l2.getPostings();
+            if (entry2.containsKey(docId)) {
+                // both term1 and term2 are in the same doc
+                Posting q = entry2.get(docId);
+
+                // System.out.println("docid: " + docId);
+                countAB += getCountOfConsecutivePositions(p.getPositions(), q.getPositions());
+            }
+        }
+
+        // System.out.println(
+        // term1 + ": " + countA + ", " + term2 + ": " + countB + ", countAB: " +
+        // countAB);
+
+        return (countAB) / (countA + countB);
+    }
+
+    private int getCountOfConsecutivePositions(ArrayList<Integer> positionsA,
+            ArrayList<Integer> positionsB) {
+
+        int count = 0;
+        /*
+         * test: positionsA = new ArrayList<Integer>(); positionsB = new
+         * ArrayList<Integer>(); positionsA.add(1); positionsA.add(5);
+         * positionsA.add(7); positionsA.add(8); positionsA.add(9); positionsA.add(10);
+         * positionsB.add(2); positionsB.add(3); positionsB.add(4); positionsB.add(5);
+         * positionsB.add(11); positionsB.add(12);
+         */
+        // two pointers to iterate over the position-arrays respectively
+        int pointerA = 0, pointerB = 0;
+        int len1 = positionsA.size(), len2 = positionsB.size();
+
+        while (pointerA < len1 && pointerB < len2) {
+            int a = positionsA.get(pointerA), b = positionsB.get(pointerB);
+            if ((a + 1) == b) {
+                // consecutive positions - term A just before term B
+                count++;
+                pointerA++;
+                pointerB++;
+                // System.out.println(a + " and " + b);
+            } else if (a < b) {
+                // increment the pointer to the next position
+                pointerA++;
+            } else {
+                pointerB++;
+            }
+        }
+
+        // System.out.println("count is " + count);
+        return count;
+    }
 }

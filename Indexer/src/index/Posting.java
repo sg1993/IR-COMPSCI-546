@@ -82,7 +82,7 @@ public class Posting {
         return true;
     }
 
-    private ArrayList<Integer> getPositions() {
+    public ArrayList<Integer> getPositions() {
         return positions;
     }
 }

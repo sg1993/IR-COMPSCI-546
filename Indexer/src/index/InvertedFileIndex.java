@@ -49,6 +49,10 @@ public class InvertedFileIndex extends Index {
     // Map of term to the number of bytes to read for this term
     private HashMap<String, Integer> termToReadBytesMap = null;
 
+    // number of documents in the collection. This will be written to
+    // and read from the .metadata file
+    private int numDocs = 0;
+
     public InvertedFileIndex(String filename) {
         super();
         invListLookup = new HashMap<String, InvertedList>();
@@ -56,7 +60,19 @@ public class InvertedFileIndex extends Index {
     }
 
     public void createIndexFromDocumentStore(ArrayList<Document> docs) {
+        // write the number of docs into a metadata file
+        PrintWriter pw = null;
+        try {
+            pw = new PrintWriter(indexFileNameString + ".metadata");
+        } catch (FileNotFoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        pw.write(docs.size() + "\n");
+
         for (Document doc : docs) {
+            // write the backing document id of each doc into a separate line
+            pw.write(doc.getBackingId() + "\n");
             String[] termVector = doc.getTermVector();
             int termPosition = 1;
             InvertedList list = null;
@@ -73,6 +89,9 @@ public class InvertedFileIndex extends Index {
                 termPosition++;
             }
         }
+
+        // close the metadata file
+        pw.close();
     }
 
     private long writeUncompressed(ArrayList<Integer> list) {
@@ -200,7 +219,9 @@ public class InvertedFileIndex extends Index {
         return invertedList;
     }
 
-    public void loadLookupTable() {
+    // This method loads the lookup-table.
+    // The lookup-table completely resides in memory.
+    private void loadLookupTable() {
         if (termToOffsetMap == null) {
             try {
                 BufferedReader termToOffsetLookupFile = new BufferedReader(
@@ -257,6 +278,16 @@ public class InvertedFileIndex extends Index {
 
                 // System.out.println(termToOffsetMap);
                 // System.out.println(termToReadBytesMap);
+
+                // load the metadata file to find out the number of docs in the collection.
+                // the first line has that info.
+                // the metadata file will be named (and has to be)
+                // index's file-name + ".metadata" extension.
+                BufferedReader metadataReader = new BufferedReader(
+                        new FileReader(indexFileNameString + ".metadata"));
+                numDocs = Integer.valueOf(metadataReader.readLine());
+
+                metadataReader.close();
 
             } catch (NumberFormatException | IOException e) {
                 // TODO Auto-generated catch block
@@ -339,6 +370,7 @@ public class InvertedFileIndex extends Index {
         return true;
     }
 
+    // Reads the index File and gets the InvertedList for a term
     public InvertedList getInvertedListForTerm(String term) {
 
         boolean compressed = false;
@@ -380,5 +412,59 @@ public class InvertedFileIndex extends Index {
         }
 
         return constructInvertedListFromByteArray(compressed, buffer, term);
+    }
+
+    public ArrayList<String> getVocabListFromIndex() {
+        ArrayList<String> result = new ArrayList<String>();
+
+        // load the lookup table if not already done
+        if (termToOffsetMap == null) {
+            loadLookupTable();
+        }
+
+        // return the keys from the lookup-table
+        for (String s : termToOffsetMap.keySet()) {
+            result.add(s);
+        }
+        return result;
+    }
+
+    // returns frequency of a term over the entire corpus
+    public int getCollectionFrequencyForTerm(String term) {
+
+        // load the lookup table if not already done
+        if (termToOffsetMap == null) {
+            loadLookupTable();
+        }
+
+        if (termtoCFMap.containsKey(term))
+            return termtoCFMap.get(term);
+
+        return 0;
+    }
+
+    // return how many documents does the term appear in atleast once
+    public int getDocumentFrequencyForTerm(String term) {
+
+        // load the lookup table if not already done
+        if (termToOffsetMap == null) {
+            loadLookupTable();
+        }
+
+        if (termtoDFMap.containsKey(term))
+            return termtoDFMap.get(term);
+
+        return 0;
+    }
+
+    public int getNumDocs() {
+
+        // load the lookup table if not already done
+        // this will read the .metadata file as well which has
+        // the total number of docs in the collection
+        if (termToOffsetMap == null) {
+            loadLookupTable();
+        }
+        return numDocs;
     }
 }

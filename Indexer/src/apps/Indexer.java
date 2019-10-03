@@ -1,4 +1,4 @@
-package main;
+package apps;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -9,13 +9,21 @@ import org.apache.commons.cli.ParseException;
 
 import index.InvertedFileIndex;
 import reader.SceneReader;
-import retriever.DocAtATimeRetriever;
 
-public class Runner {
+/*
+ * This app builds index from a document-store and write that to disk,
+ * and can recreate index from file-on-disk,
+ * run validation-tests on indexes such as:
+ * a) in-memory index vs index created from file on disk
+ * b) compressed vs uncompressed indexes
+ */
+
+public class Indexer {
+
     public static void main(String[] args) {
 
         boolean createIndex = false, compressIndex = false, indexValidation = false,
-                comprValidation = false, completeInMemoryIndex = false, queryRetrieval = false;
+                comprValidation = false, completeInMemoryIndex = false;
         String indexInPath = null, indexOutPath = null, indexValidationPath = null;
 
         // parse the arguments using Apache-CLI
@@ -28,7 +36,6 @@ public class Runner {
                 "validate index created from document store vs the same index created from disk");
         options.addOption("t", "validate-compr", true,
                 "validate 2 indexes from document store with and without compression");
-        options.addOption("q", "run-query", true, "run in query mode");
 
         // automatically generate the help statement
         HelpFormatter formatter = new HelpFormatter();
@@ -55,9 +62,6 @@ public class Runner {
             } else if (cmd.hasOption("d")) {
                 completeInMemoryIndex = true;
                 indexInPath = cmd.getOptionValue("d");
-            } else if (cmd.hasOption("q")) {
-                queryRetrieval = true;
-                indexInPath = cmd.getOptionValue("q");
             }
 
         } catch (ParseException e) {
@@ -120,15 +124,6 @@ public class Runner {
             InvertedFileIndex index = new InvertedFileIndex(indexInPath);
             index.createCompleteIndexFromDisk();
 
-        } else if (queryRetrieval) {
-            InvertedFileIndex index = new InvertedFileIndex(indexInPath);
-            index.loadLookupTable();
-
-            // Pass the invertedFileIndex into the retriever
-            DocAtATimeRetriever retriever = new DocAtATimeRetriever(index,
-                    sceneReader.getDocuments());
-            String[] query = { "titania" };
-            retriever.retrieveQuery(query, /* top */ 10 /* results */);
         }
     }
 }

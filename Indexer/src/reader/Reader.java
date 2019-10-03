@@ -1,6 +1,9 @@
 package reader;
 
+import java.io.PrintWriter;
 import java.util.ArrayList;
+
+import org.json.JSONObject;
 
 public abstract class Reader {
 
@@ -22,6 +25,22 @@ public abstract class Reader {
 
     public int getDocumentListSize() {
         return documentList.size();
+    }
+
+    public void writeDocumentStatistics(PrintWriter pw) {
+        // compute various statistics in JSON format into the file
+        JSONObject object = new JSONObject();
+
+        // number of documents
+        object.put("num_docs", documentList.size());
+
+        JSONObject docIdMap = new JSONObject();
+
+        for (Document document : documentList) {
+            docIdMap.put(Integer.toString(document.getDocumentUniqueId()), document.getBackingId());
+        }
+        object.put("docid_backingid_map", docIdMap);
+        pw.write(object.toString(4));
     }
 
     // Each type of Document-readers should implement their own read()
