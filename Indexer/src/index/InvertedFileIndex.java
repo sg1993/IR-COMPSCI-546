@@ -13,7 +13,9 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map.Entry;
 
-import encoder.VByteEncoder;
+import compression.Compressor;
+import compression.EmptyCompressor;
+import compression.VByteEncoder;
 import reader.Document;
 
 /* This is the InvertedFile-Index class.
@@ -94,23 +96,18 @@ public class InvertedFileIndex extends Index {
         pw.close();
     }
 
-    private long writeUncompressed(ArrayList<Integer> list) {
-        long bytesWritten = 0;
-        for (Integer integer : list) {
-            try {
-                binaryFile.writeInt(integer);
-                bytesWritten += 4;
-            } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
+    private long writeToBinaryFile(ArrayList<Integer> list, boolean compress) {
+
+        byte[] toWrite = null;
+
+        if (compress) {
+            VByteEncoder compressor = new VByteEncoder();
+            toWrite = compressor.encodeIntegerList(list);
+        } else {
+            EmptyCompressor compressor = new EmptyCompressor();
+            toWrite = compressor.encodeIntegerList(list);
         }
 
-        return bytesWritten;
-    }
-
-    private long writeCompressed(ArrayList<Integer> list) {
-        byte[] toWrite = VByteEncoder.encodeIntegerList(list);
         try {
             binaryFile.write(toWrite);
         } catch (IOException e) {
@@ -150,10 +147,7 @@ public class InvertedFileIndex extends Index {
                 writeLookupEntry(termToOffsetLookupFile, list.getKey(), totalBytesWritten,
                         temp.getDocumentFrequency(), temp.getCollectionFrequency());
 
-                if (compress)
-                    totalBytesWritten += writeCompressed(temp.getList(compress));
-                else
-                    totalBytesWritten += writeUncompressed(temp.getList(compress));
+                totalBytesWritten += writeToBinaryFile(temp.getList(compress), compress);
             }
 
             // System.out.println("Total bytes written to disk: " + totalBytesWritten);
@@ -177,22 +171,11 @@ public class InvertedFileIndex extends Index {
         InvertedList invertedList = new InvertedList(term);
 
         if (compressed) {
-            list = VByteEncoder.decodeIntegerList(buffer);
+            VByteEncoder vByteDecoder = new VByteEncoder();
+            list = vByteDecoder.decodeIntegerList(buffer);
         } else {
-            int i = 0, l = buffer.length, value = 0;
-            // System.out.println("buf len: " + l);
-            list = new ArrayList<Integer>();
-            while (i < l) {
-                for (int j = 0; j < 4; j++) {
-                    int shift = (4 - 1 - j) * 8;
-                    value += (buffer[i + j] & 0x000000FF) << shift;
-                }
-                list.add(value);
-
-                // move to the next 4 bytes
-                i += 4;
-                value = 0;
-            }
+            EmptyCompressor emptyDecoder = new EmptyCompressor();
+            list = emptyDecoder.decodeIntegerList(buffer);
         }
 
         int index, len = list.size();

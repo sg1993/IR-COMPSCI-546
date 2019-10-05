@@ -14,7 +14,6 @@ import org.apache.commons.cli.ParseException;
 
 import index.InvertedFileIndex;
 import index.InvertedList;
-import reader.SceneReader;
 import retriever.DocAtATimeRetriever;
 
 public class QueryRetriever {

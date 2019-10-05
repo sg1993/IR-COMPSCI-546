@@ -18,6 +18,7 @@ public class SceneReader extends Reader {
         super(fname);
     }
 
+    @Override
     public void read() {
         InputStream is;
         try {

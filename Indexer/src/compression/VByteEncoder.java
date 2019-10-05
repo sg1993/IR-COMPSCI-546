@@ -1,11 +1,12 @@
-package encoder;
+package compression;
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 
-public class VByteEncoder {
+public class VByteEncoder extends Compressor {
 
-    public static byte[] encodeIntegerList(ArrayList<Integer> list) {
+    @Override
+    public byte[] encodeIntegerList(ArrayList<Integer> list) {
         // Use ByteArrayOutputStream instead of ByteBuffer
         // since ByteBuffer requires early allocation
         // and we don't know the size post-encoding yet
@@ -21,7 +22,8 @@ public class VByteEncoder {
         return bos.toByteArray();
     }
 
-    public static ArrayList<Integer> decodeIntegerList(byte[] data) {
+    @Override
+    public ArrayList<Integer> decodeIntegerList(byte[] data) {
         ArrayList<Integer> result = new ArrayList<Integer>();
         int len = data.length;
         for (int i = 0; i < len; i++) {
