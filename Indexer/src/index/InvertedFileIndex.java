@@ -197,9 +197,18 @@ public class InvertedFileIndex extends Index {
 
         int index, len = list.size();
         // System.out.println(list);
+        int prevDocId = 0;
         for (index = 0; index < len;) {
             int docId = list.get(index);
+
+            if (compressed) {
+                // delta decoding of docId
+                docId += prevDocId;
+                prevDocId = docId;
+            }
             index++;
+
+            // get tf, which is not delta-encoded
             int tf = list.get(index);
             index++;
             int prevPosition = 0;

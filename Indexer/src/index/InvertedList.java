@@ -2,6 +2,7 @@ package index;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map.Entry;
 
 public class InvertedList {
@@ -22,11 +23,11 @@ public class InvertedList {
     // The key is the unique identifier for doc. String because it accommodates most
     // docIds. If passing integers, convert to String first.
     // the value is the index in which this docId is added to list
-    HashMap<Integer, Posting> postings;
+    LinkedHashMap<Integer, Posting> postings;
 
     public InvertedList(String s) {
         term = s;
-        postings = new HashMap<Integer, Posting>();
+        postings = new LinkedHashMap<Integer, Posting>();
         numDocs = 0;
         collectionFrequency = 0;
     }
@@ -50,8 +51,23 @@ public class InvertedList {
 
     public ArrayList<Integer> getList(boolean compress) {
         ArrayList<Integer> result = new ArrayList<Integer>();
+
+        int previousDocId = 0;
         for (Entry<Integer, Posting> posting : postings.entrySet()) {
-            result.addAll(posting.getValue().getPosting(compress));
+            // if compression is enabled, we'll get the delta-encoded list from the
+            // "Posting" class. Note that only the positions will be delta-encoded at this
+            // stage, since Posting doesn'know about other docIds..
+            ArrayList<Integer> posList = posting.getValue().getPosting(compress);
+
+            if (compress) {
+                // delta-encode docId which is the first element in the flattened posting array
+                // returned by Posting class
+                int deltaDocId = posList.get(0) - previousDocId;
+                previousDocId = posList.get(0);
+                posList.set(0, deltaDocId);
+            }
+
+            result.addAll(posList);
         }
         return result;
     }

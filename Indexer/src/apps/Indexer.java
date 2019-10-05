@@ -35,17 +35,17 @@ public class Indexer {
         // parse the arguments using Apache-CLI
         Options options = new Options();
         options.addOption("i", true, "create index from document-store and write it to disk. "
-                + "Requires as argument the path on disk to create the index at");
-        options.addOption("c", false, "compress index before writing to disk");
+                + "Requires as argument the path on disk to create the index at.");
+        options.addOption("c", false, "compress index before writing to disk.");
         options.addOption("d", true, "create fully in-memory index from file on disk. "
                 + "This is mostly for validation purposes - usually indexes are too big too be housed in memory.");
         options.addOption("v", true,
-                "validate index created from document store against the same index created from disk"
-                        + "Requires as argument the path on disk to create the index at");
+                "validate index created from document store against the same index created from disk. "
+                        + "Requires as argument the path on disk to create the index at.");
         options.addOption("t", "validate-compr", true,
                 "create 2 indexes from document store, with and without compression and "
-                        + "then compare if they are the same."
-                        + "Requires as argument the path on disk to create the index at");
+                        + "then compare if they are the same. "
+                        + "Requires as argument the path on disk to create the index at.");
 
         // automatically generate the help statement
         HelpFormatter formatter = new HelpFormatter();
@@ -114,8 +114,14 @@ public class Indexer {
             index2.createIndexFromDocumentStore(sceneReader.getDocuments());
             index2.writeSelfToDisk(true);
 
-            // compare index1 vs index2
-            boolean same = InvertedFileIndex.compareTwoInvertedIndexes(index1, index2);
+            // compare index1 vs index2 after reading from disk
+            InvertedFileIndex index3 = new InvertedFileIndex(indexValidationPath + ".uncompressed");
+            index3.createCompleteIndexFromDisk();
+
+            InvertedFileIndex index4 = new InvertedFileIndex(indexValidationPath + ".compressed");
+            index4.createCompleteIndexFromDisk();
+
+            boolean same = InvertedFileIndex.compareTwoInvertedIndexes(index3, index4);
             if (!same) {
                 System.out.println("Validation failed!");
             } else {
