@@ -11,8 +11,8 @@ import index.InvertedFileIndex;
 import reader.SceneReader;
 
 /*
- * This app builds index from a document-store and write that to disk,
- * and can recreate index from file-on-disk,
+ * This app can build index from the document-store and write that to disk,
+ * and can recreate index from file-on-disk. It can also 
  * run validation-tests on indexes such as:
  * a) in-memory index vs index created from file on disk
  * b) compressed vs uncompressed indexes
@@ -22,20 +22,30 @@ public class Indexer {
 
     public static void main(String[] args) {
 
+        if (args.length < 1) {
+            System.out.println("Need atleast path to  document-store as argument.");
+        }
+
+        String docStorePath = args[0];
+
         boolean createIndex = false, compressIndex = false, indexValidation = false,
                 comprValidation = false, completeInMemoryIndex = false;
         String indexInPath = null, indexOutPath = null, indexValidationPath = null;
 
         // parse the arguments using Apache-CLI
         Options options = new Options();
-        options.addOption("i", true, "create index from document-store");
+        options.addOption("i", true, "create index from document-store and write it to disk. "
+                + "Requires as argument the path on disk to create the index at");
         options.addOption("c", false, "compress index before writing to disk");
         options.addOption("d", true, "create fully in-memory index from file on disk. "
                 + "This is mostly for validation purposes - usually indexes are too big too be housed in memory.");
         options.addOption("v", true,
-                "validate index created from document store vs the same index created from disk");
+                "validate index created from document store against the same index created from disk"
+                        + "Requires as argument the path on disk to create the index at");
         options.addOption("t", "validate-compr", true,
-                "validate 2 indexes from document store with and without compression");
+                "create 2 indexes from document store, with and without compression and "
+                        + "then compare if they are the same."
+                        + "Requires as argument the path on disk to create the index at");
 
         // automatically generate the help statement
         HelpFormatter formatter = new HelpFormatter();
@@ -69,8 +79,7 @@ public class Indexer {
             e.printStackTrace();
         }
 
-        SceneReader sceneReader = new SceneReader(
-                "C:/Users/georg/motherlode/UMass/cs546/" + "shakespeare-scenes.json");
+        SceneReader sceneReader = new SceneReader(docStorePath);
         sceneReader.read();
         System.out.println("There are " + sceneReader.getDocumentListSize() + " documents");
 
@@ -93,6 +102,7 @@ public class Indexer {
             } else {
                 System.out.println("Validation success!");
             }
+
         } else if (comprValidation) {
             // create an index without compression
             InvertedFileIndex index1 = new InvertedFileIndex(indexValidationPath + ".uncompressed");

@@ -133,7 +133,7 @@ public class QueryRetriever {
 
         options.addOption("q", "run-query", true,
                 "Run query-retrieval. 100 sets of 7-term query. Requires 1 arg: the index path on disk.");
-        
+
         options.addOption("s", "get-stats", true,
                 "Get df/tf for 100 sets of 7-term query. Requires 1 arg: the index path on disk.");
 
@@ -176,19 +176,13 @@ public class QueryRetriever {
                 Collections.shuffle(vocabList);
                 System.out.println(vocabList.subList(0, numTermsInQuery));
             }
+
         } else if (queryRetrieval) {
-
-            SceneReader sceneReader = new SceneReader(
-                    "C:/Users/georg/motherlode/UMass/cs546/" + "shakespeare-scenes.json");
-            sceneReader.read();
-
-            System.out.println("There are " + sceneReader.getDocumentListSize() + " documents");
 
             InvertedFileIndex index = new InvertedFileIndex(indexPath);
 
             // Pass the invertedFileIndex into the retriever
-            DocAtATimeRetriever retriever = new DocAtATimeRetriever(index,
-                    sceneReader.getDocuments());
+            DocAtATimeRetriever retriever = new DocAtATimeRetriever(index, index.getNumDocs());
 
             // query retrieval using 7 terms from the array at a time
             int len = SEVEN_TERM_QUERY_SET.length, queryNum = 1;
@@ -204,11 +198,13 @@ public class QueryRetriever {
         } else if (recordTermStatistics) {
             InvertedFileIndex index = new InvertedFileIndex(indexPath);
             int len = SEVEN_TERM_QUERY_SET.length;
-            for(int i=0; i<len; i++) {
+            for (int i = 0; i < len; i++) {
                 String term = SEVEN_TERM_QUERY_SET[i];
                 InvertedList iL = index.getInvertedListForTerm(term);
-                System.out.println("\"" + term + "\" appears " + iL.getCollectionFrequency() + " times in the corpus.");
-                System.out.println("\"" + term + "\" appears in " + iL.getDocumentFrequency() + " documents at-least once.");
+                System.out.println("\"" + term + "\" appears " + iL.getCollectionFrequency()
+                        + " times in the corpus.");
+                System.out.println("\"" + term + "\" appears in " + iL.getDocumentFrequency()
+                        + " documents at-least once.");
             }
         }
     }

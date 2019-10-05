@@ -104,6 +104,7 @@ public class DiceCoefficientCalculator {
         if (args.length != 1) {
             System.out.println("Pass (only) the path to the index location on disk as argument.");
         }
+
         String indexPath = args[0];
         System.out.println(indexPath);
         InvertedFileIndex index = new InvertedFileIndex(indexPath);
@@ -134,7 +135,8 @@ public class DiceCoefficientCalculator {
                         bestPair = vocabTerm;
                     }
                 }
-                bestPairWriter.write(queryTerm + " : " + bestPair + "\t\t\t\t" + bestDicesValue + "\n");
+                bestPairWriter.write(
+                        queryTerm + " : " + bestPair + "\t\t\t\t\t\t" + bestDicesValue + "\n");
             }
             long endTime = System.currentTimeMillis();
             System.out.println("It took " + (endTime - startTime)
@@ -144,6 +146,5 @@ public class DiceCoefficientCalculator {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-
     }
 }
