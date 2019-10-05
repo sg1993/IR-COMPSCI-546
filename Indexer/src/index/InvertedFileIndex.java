@@ -13,7 +13,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map.Entry;
 
-import compression.Compressor;
 import compression.EmptyCompressor;
 import compression.VByteEncoder;
 import reader.Document;
@@ -50,6 +49,8 @@ public class InvertedFileIndex extends Index {
 
     // Map of term to the number of bytes to read for this term
     private HashMap<String, Integer> termToReadBytesMap = null;
+
+    private ArrayList<String> backingDocumentIDs = null;
 
     // number of documents in the collection. This will be written to
     // and read from the .metadata file
@@ -164,6 +165,10 @@ public class InvertedFileIndex extends Index {
         }
     }
 
+    /*
+     * This API reconstructs a completely in-memory index from the index-file on
+     * disk. ONLY FOR VALIDATION PURPOSES. Retrieval doesn't use this API!
+     */
     private InvertedList constructInvertedListFromByteArray(boolean compressed, byte[] buffer,
             String term) {
 
@@ -278,6 +283,12 @@ public class InvertedFileIndex extends Index {
                 BufferedReader metadataReader = new BufferedReader(
                         new FileReader(indexFileNameString + ".metadata"));
                 numDocs = Integer.valueOf(metadataReader.readLine());
+
+                line = null;
+                backingDocumentIDs = new ArrayList<String>();
+                while ((line = metadataReader.readLine()) != null) {
+                    backingDocumentIDs.add(line);
+                }
 
                 metadataReader.close();
 
@@ -458,5 +469,46 @@ public class InvertedFileIndex extends Index {
             loadLookupTable();
         }
         return numDocs;
+    }
+
+    public int getNumWordsInCollection() {
+        // load the lookup table if not already done
+        if (termToOffsetMap == null) {
+            loadLookupTable();
+        }
+
+        int count = 0;
+        for (Entry<String, Integer> entry : termtoCFMap.entrySet()) {
+            count += entry.getValue();
+        }
+
+        return count;
+    }
+
+    public int getNumWordsInDocument(int docId) {
+
+        // load the lookup table if not already done
+        if (termToOffsetMap == null) {
+            loadLookupTable();
+        }
+
+        int count = 0;
+        for (String term : getVocabListFromIndex()) {
+            HashMap<Integer, Posting> posting = getInvertedListForTerm(term).getPostings();
+            if (posting.containsKey(docId)) {
+                count += posting.get(docId).getTermFrequency();
+            }
+        }
+
+        return count;
+    }
+
+    public ArrayList<String> getBackingDocumentIDs() {
+        // load the lookup table if not already done
+        if (termToOffsetMap == null) {
+            loadLookupTable();
+        }
+
+        return backingDocumentIDs;
     }
 }

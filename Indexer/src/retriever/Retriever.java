@@ -17,9 +17,9 @@ public abstract class Retriever {
     }
 
     // The retriveQuery() method takes a String[] of query-terms
-    // and uses the Index object.
+    // and uses the Index to retrieve.
     // The method returns a List of top k documents that score well according to
-    // some or any scoring method.
+    // some/any scoring method.
     public abstract List<Map.Entry<Integer, Double>> retrieveQuery(String[] query, int k);
 
     // This method computes Dice's coefficient for 2 terms.

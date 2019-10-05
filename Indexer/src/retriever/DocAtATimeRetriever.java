@@ -115,7 +115,7 @@ public class DocAtATimeRetriever extends Retriever {
         // how many times does termA appear in the entire collection
         double countA = l1.getCollectionFrequency();
 
-        // how many times does termA appear in the entire collection
+        // how many times does termB appear in the entire collection
         double countB = l2.getCollectionFrequency();
 
         // compute how many times does termA just precedes termB

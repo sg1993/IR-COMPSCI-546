@@ -3,6 +3,8 @@ package apps;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map.Entry;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -14,6 +16,7 @@ import org.apache.commons.cli.ParseException;
 
 import index.InvertedFileIndex;
 import index.InvertedList;
+import reader.Scene;
 import retriever.DocAtATimeRetriever;
 
 public class QueryRetriever {
@@ -205,6 +208,66 @@ public class QueryRetriever {
                 System.out.println("\"" + term + "\" appears in " + iL.getDocumentFrequency()
                         + " documents at-least once.");
             }
+
+            // find average length of a scene
+            int numWords = index.getNumWordsInCollection();
+            int numDocs = index.getNumDocs();
+            System.out.println("Average length of document: "
+                    + (double) (numWords) / (double) (numDocs) + " words");
+
+            // find length of all documents in the document store for other statistics
+            ArrayList<Integer> docLength = new ArrayList<Integer>();
+
+            for (int i = 0; i < numDocs; i++) {
+                int l = index.getNumWordsInDocument(i);
+                docLength.add(l);
+                System.out.println("Scene " + i + " has " + l + " words");
+            }
+
+            // shortest scene
+            int shortestScene = 0, shortestSceneLength = Integer.MAX_VALUE, j = 0;
+            for (Integer i : docLength) {
+                if (i < shortestSceneLength) {
+                    shortestScene = j;
+                    shortestSceneLength = i;
+                }
+                j++;
+            }
+            System.out.println("Shortest Scene is: " + shortestScene + " with "
+                    + shortestSceneLength + " words.");
+
+            // longest play
+            ArrayList<String> sceneIDArrayList = index.getBackingDocumentIDs();
+
+            // find play-length for all plays
+            HashMap<String, Integer> playLength = new HashMap<String, Integer>();
+            for (int i = 0; i < numDocs; i++) {
+                String[] ids = sceneIDArrayList.get(i).split("#"); // we know playId and sceneId is
+                                                                   // split by #
+                String playId = ids[0];
+                String sceneId = ids[1];
+                int c = playLength.get(playId) != null ? playLength.get(playId) : 0;
+                playLength.put(playId, c + docLength.get(i));
+            }
+
+            System.out.println(playLength);
+            String longestPlay = "", shortestPlay = "";
+            int longestPlayLength = 0, shortestPlayLength = Integer.MAX_VALUE;
+            for (Entry<String, Integer> entry : playLength.entrySet()) {
+                if (entry.getValue() > longestPlayLength) {
+                    longestPlay = entry.getKey();
+                    longestPlayLength = entry.getValue();
+                }
+                if (entry.getValue() < shortestPlayLength) {
+                    shortestPlay = entry.getKey();
+                    shortestPlayLength = entry.getValue();
+                }
+            }
+
+            System.out.println(
+                    "Shortest play: " + shortestPlay + " with " + shortestPlayLength + " words.");
+            System.out.println(
+                    "Longest play: " + longestPlay + " with " + longestPlayLength + " words.");
         }
     }
 }

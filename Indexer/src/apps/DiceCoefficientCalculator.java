@@ -143,7 +143,6 @@ public class DiceCoefficientCalculator {
                     + " milliseconds to compute best pair for 700 terms.");
             bestPairWriter.close();
         } catch (FileNotFoundException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }
