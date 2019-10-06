@@ -28,7 +28,7 @@ apps.Indexer <path to JSON file> -i <path to write the index to>
 
 apps.Indexer <path to JSON file> -c -i <path to write the index to>
 
-3) Normal query-retrival on 7-term query set of 100 queries:
+3) Query-retrival on 7-term & 14-term query set of 100 queries:
 
 apps.QueryRetriever -q <path where index can be read from>
 
@@ -45,3 +45,23 @@ apps.QueryRetriever -q <path where index can be read from>
 5) Calculate Dice's coefficient for 700-terms:
 
 apps.DiceCoefficientCalculator <path to index on disk>
+
+Contents in the zip file:
+
+1) report.pdf
+
+2) The Indexer/ has the src/ and lib/ within it.
+
+3) 7-term-QUERY.txt has the 100 7-term queries, one on each line.
+
+4) 7-term-query-results.txt has the results (top-10 documents and their scores) for each of the 100 7-term queries.
+
+5) "Dice's best-pair - 1400 - terms.txt" has each of 700 terms and their best-pair-term with the dice's coeeficient score on each line.
+
+6) 14-term-QUERY.txt has the 7 original terms and their respective Dice's coefficient best-pair-term placed adjacent to the term.
+
+So, it has 14-terms in each line, 100 lines in total.
+
+7) 14-term-query-results.txt has the results (top-10 documents and their scores) for each of the 100 14-term queries.
+
+8) term-statistics.txt has additional statistics on the collection like collection-frequency and document-frequency of each of the 700 terms, the longest/shortest scene/play, etc.

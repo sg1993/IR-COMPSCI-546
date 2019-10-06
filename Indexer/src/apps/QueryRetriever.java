@@ -18,6 +18,7 @@ import index.InvertedFileIndex;
 import index.InvertedList;
 import reader.Scene;
 import retriever.DocAtATimeRetriever;
+import retriever.Retriever;
 
 public class QueryRetriever {
 
@@ -112,6 +113,186 @@ public class QueryRetriever {
             "marry", "green", "ruff", "fel", "offendress", "epicure", "abhorr", "zenelophon", "ale",
             "respect", "elm", "elbe", "savour" };
 
+    // 1400 query terms or 700 pairs of words where each pair is a word and its
+    // best-pair w.r.t Dice's Coefficient
+    private static String[] FOURTEEN_TERM_QUERY_SET = { "effects", "corneliu", "unearned", "luck",
+            "burr", "vile", "indigne", "serviteur", "chequin", "were", "lisp", "affecting", "rains",
+            "downright", "isbel", "since", "cast", "away", "guise", "when", "seemingly", "obedient",
+            "wire", "and", "twelve", "score", "sheet", "bleach", "judgest", "false", "pulse",
+            "twice", "swollen", "parcel", "garcon", "a", "firebrand", "brother", "outvenom", "all",
+            "row", "pluck", "brace", "re", "affirm", "it", "couronne", "le", "pleaseth", "burgundy",
+            "invocation", "cardinal", "nereid", "so", "viz", "these", "madame", "comme",
+            "translate", "ourself", "marjoram", "king", "unmerite", "proud", "cheer", "appall",
+            "antipholu", "of", "leek", "today", "orleans", "alencon", "overspread", "with",
+            "riches", "fineless", "rigg", "st", "entrap", "thee", "cent", "ecu", "lone", "woman",
+            "patroclu", "thersite", "curate", "alexander", "plummet", "sound", "hugh", "evans",
+            "fancies", "prick", "pigmy", "arms", "opinion", "crush", "shock", "them", "glance",
+            "full", "despairing", "shouldst", "journey", "bated", "damnation", "add", "hundredth",
+            "psalm", "pious", "chanson", "calves", "guts", "bide", "until", "hermione", "mamilliu",
+            "yonder", "tower", "jake", "with", "ergrowth", "of", "trempl", "of", "marseille",
+            "road", "magician", "obscure", "unweeded", "garden", "venice", "venetia", "value",
+            "differ", "vitravio", "signior", "unpleasant", "st", "conflux", "of", "bray", "trumpet",
+            "diffuse", "attire", "remorseful", "pardon", "counter", "caster", "soe", "er", "toast",
+            "cheese", "vulnerable", "crest", "churchmen", "pray", "stanze", "a", "heirless", "it",
+            "directitude", "first", "falourous", "gentleman", "cerimon", "philemon", "tow", "me",
+            "sustain", "moe", "gingerly", "lucetta", "nonino", "these", "bel", "s", "edgeless",
+            "sword", "hyen", "and", "po", "it", "quench", "fire", "griffin", "and", "pursent",
+            "three", "bene", "intelligo", "distinction", "provide", "unprovoke", "it", "condemn",
+            "seconds", "hap", "betide", "mare", "together", "fiddle", "em", "ember", "up",
+            "topless", "deputation", "censer", "in", "undescry", "perdita", "celestial", "harmony",
+            "descant", "there", "counterpoint", "costly", "highly", "heapt", "accused", "freely",
+            "overswear", "and", "enamour", "d", "topsy", "turvy", "ladyship", "silvia", "waterish",
+            "diet", "velvet", "hose", "senator", "c", "cuore", "ben", "u", "don", "outstretch", "d",
+            "horizon", "we", "spoke", "aloud", "phlegmatic", "hear", "expire", "moreover", "soften",
+            "steel", "innumerable", "substance", "dispose", "tout", "antiopa", "titania", "feel",
+            "retiring", "thine", "own", "coil", "must", "spiritless", "so", "recollect", "terms",
+            "sanguine", "star", "faite", "vous", "in", "the", "strive", "mightily", "lapland",
+            "sorcerer", "ulcer", "hamlet", "winning", "match", "knead", "clod", "solon", "s",
+            "mouse", "trap", "sophy", "sir", "terre", "orleans", "ubique", "then", "grain", "tort",
+            "confines", "sly", "tween", "snow", "infernal", "ate", "bachelor", "sit", "contrarious",
+            "quest", "lee", "d", "worky", "day", "humble", "bee", "unlimited", "seneca",
+            "reconcile", "dumb", "gull", "catcher", "gosling", "to", "quatch", "buttock", "isidore",
+            "isidore", "accessible", "is", "solem", "out", "carnarvonshire", "although", "bedimm",
+            "d", "have", "been", "plantage", "to", "obstruction", "malvolio", "erhang", "firmament",
+            "gormandise", "as", "contributor", "and", "midst", "john", "sharpest", "blow", "firm",
+            "fixture", "comparison", "apart", "bertram", "lafeu", "mansionry", "that", "confession",
+            "justify", "michael", "cassio", "uncapable", "of", "armory", "with", "allure", "beauty",
+            "mulmutiu", "made", "alone", "uphold", "putrefy", "core", "usure", "senate", "hannibal",
+            "drive", "brooch", "table", "effeminate", "changeable", "carnarvonshire", "although",
+            "attractive", "eyes", "join", "stool", "clownish", "fool", "attend", "on", "save",
+            "yourself", "nunnery", "go", "snare", "uncaught", "cleanse", "them", "fun", "soul",
+            "aloft", "lessen", "townsmen", "yet", "unstanched", "thirst", "tax", "signior",
+            "southern", "cloud", "overfond", "of", "harcourt", "look", "wings", "misdoubteth",
+            "rejoiceth", "my", "wooing", "here", "heatest", "my", "ciel", "cousin", "fin",
+            "couronne", "semblable", "coherence", "unyoked", "humour", "render", "vengeance",
+            "allicho", "and", "gibber", "in", "foix", "beaumont", "resignation", "of", "hinderd",
+            "by", "joineth", "rouen", "ungovern", "d", "ostentare", "to", "mining", "all",
+            "qualified", "too", "ajax", "ajax", "harry", "percy", "principal", "glancing",
+            "spiteful", "execrate", "votarist", "roots", "had", "been", "imman", "and", "tend",
+            "foh", "rewards", "hast", "saucer", "sweet", "teem", "loins", "mark", "antony",
+            "pretty", "dimple", "import", "bigot", "received", "belief", "stag", "bassianu",
+            "dismantle", "was", "garrison", "york", "sumpter", "to", "caelo", "the", "dungeon",
+            "denmark", "slipt", "like", "metamorphose", "with", "thing", "about", "apprenticehood",
+            "to", "heighten", "d", "coffers", "ransack", "icicle", "hang", "quod", "sufficit",
+            "wholesomest", "spirt", "florizel", "perdita", "ha", "ha", "fester", "gainst",
+            "disappear", "pericle", "ridden", "with", "forenoon", "in", "gabriel", "s", "mark",
+            "antony", "cesse", "lafeu", "whereon", "hyperion", "pole", "clipt", "unmuzzled",
+            "thought", "ecstasy", "duncan", "depart", "unkiss", "discandy", "melt", "diminish",
+            "one", "auvergne", "laughest", "bessy", "to", "damage", "add", "disputable", "for",
+            "venerable", "burthen", "gaul", "france", "treason", "lurk", "enwrap", "me", "devil",
+            "himself", "venge", "thy", "fornication", "adultery", "eglantine", "whom", "menecrate",
+            "know", "vocation", "hal", "hearty", "commendation", "parler", "comment", "forewarn",
+            "wind", "recruit", "c", "longboat", "s", "oblige", "faith", "kate", "katharine",
+            "score", "hogshead", "slough", "doth", "invasion", "shall", "unparted", "to", "bodily",
+            "health", "region", "kite", "disdain", "destruction", "boat", "sail", "downward",
+            "look", "derision", "medicine", "loss", "assume", "half", "an", "glass", "pomander",
+            "scantl", "of", "adventure", "retire", "curry", "with", "basset", "crossing",
+            "magnificoe", "antonio", "helping", "baptista", "dwindle", "peak", "rhyme", "planet",
+            "variance", "antony", "venturous", "fairy", "betroth", "himself", "stark", "naked",
+            "asunder", "ah", "martem", "that", "mecaena", "gallu", "joinder", "of", "cheers",
+            "each", "require", "convenience", "ancient", "malice", "unweighed", "behavior", "sip",
+            "or", "cilicia", "and", "faithful", "tributary", "noblesse", "would", "chivalry",
+            "cressida", "livelong", "day", "verona", "brag", "untempere", "effect", "starling",
+            "shall", "bad", "verse", "mortise", "what", "scare", "bell", "bertram", "lafeu",
+            "antioch", "thaliard", "miller", "by", "brewage", "exit", "unholy", "braggart",
+            "pilchard", "are", "prompter", "where", "forbade", "her", "camp", "near", "eldest",
+            "son", "familiarly", "sometimes", "augury", "deceive", "pour", "le", "arose",
+            "antipholu", "ungrateful", "shape", "grandsire", "grandsire", "needlework", "pewter",
+            "fourth", "citizen", "gaunt", "steed", "impound", "as", "chanticleer", "cry",
+            "carnarvonshire", "although", "bessy", "to", "throat", "setting", "slightly", "baste",
+            "sheepcote", "now", "arms", "against", "waits", "upon", "martext", "truly",
+            "drawbridge", "there", "tout", "est", "float", "upon", "tah", "tah", "diedst", "a",
+            "hearten", "those", "popp", "d", "carlot", "once", "northerly", "osric", "thumb",
+            "wreck", "unnoble", "swerve", "aquilon", "come", "once", "again", "mangle", "myrmidon",
+            "eyest", "him", "lapwing", "runs", "bodkin", "biron", "turnbull", "street",
+            "affectionate", "servant", "wicked", "hannibal", "emboss", "carbuncle", "handmaid",
+            "speak", "pierce", "through", "through", "gloucestershire", "stripe", "begone",
+            "canterbury", "denny", "wist", "look", "beg", "enfranchise", "goddesse", "seeing",
+            "engineer", "hoist", "crossing", "give", "hallow", "d", "esteemest", "thou", "undraw",
+            "the", "outgoe", "the", "colour", "beard", "twould", "braid", "theirs", "theirs",
+            "remains", "unpaid", "friendly", "communication", "intermix", "d", "repulse",
+            "whatever", "capital", "crime", "welshman", "taken", "reflection", "shipwreck",
+            "salary", "not", "lennox", "ross", "degree", "priority", "honeycomb", "each",
+            "constringe", "in", "unwise", "patrician", "brink", "martiu", "wall", "joan", "aeacide",
+            "was", "fluellen", "fluellen", "governor", "gun", "bepaint", "my", "bartholomew",
+            "boar", "withdrew", "me", "dibble", "in", "errant", "malmsey", "encircle", "him",
+            "fervor", "sanctify", "pothecary", "and", "ink", "writing", "2", "then", "wither",
+            "pear", "extravagant", "spirit", "button", "thank", "las", "what", "likeness",
+            "burgundy", "affiance", "seem", "evans", "fery", "cassado", "to", "apology", "benvolio",
+            "seigeurie", "indigne", "mile", "asunder", "imitari", "is", "scribble", "form",
+            "unfortify", "a", "sanguine", "star", "coelestibu", "irae", "fives", "stark",
+            "unprovided", "stanley", "dorca", "mopsa", "opposition", "bloody", "dido", "gonzalo",
+            "dispossess", "her", "uneven", "ways", "foggy", "raw", "cain", "coloured",
+            "displeasure", "tripp", "spend", "luciliu", "jaunt", "up", "spoil", "whilst", "sprag",
+            "memory", "culpable", "queen", "item", "anchovy", "hop", "forty", "twere", "pity",
+            "erga", "te", "dodge", "and", "proscription", "cicero", "mought", "not", "sailmaker",
+            "in", "worth", "forty", "briareu", "many", "hearten", "those", "warily", "fall",
+            "contraction", "pluck", "gabriel", "s", "alarbu", "limb", "nonino", "these",
+            "controversy", "bleeding", "collected", "choice", "wherein", "crafty", "charneco",
+            "third", "trenchant", "sword", "jog", "while", "anthropophagi", "and", "unpregnant",
+            "of", "disappointed", "unanel", "carve", "bone", "reclaim", "d", "extremities", "speak",
+            "clare", "lucio", "defame", "by", "la", "pucelle", "vincere", "posse", "alphabetical",
+            "position", "gelding", "out", "crossest", "me", "aeson", "lorenzo", "udge", "me",
+            "pond", "fish", "lone", "woman", "impress", "thersite", "abridge", "from", "pomfret",
+            "pomfret", "skilful", "conserve", "erpay", "all", "peascod", "instead", "vincere",
+            "posse", "confused", "to", "cabby", "run", "deer", "mazed", "struck", "twelve", "sad",
+            "story", "l", "envoy", "prophetic", "greeting", "importune", "personal", "wanteth",
+            "wings", "disproportion", "thought", "pribble", "and", "comptible", "even", "gamesome",
+            "passing", "continue", "truce", "lodging", "likes", "enforce", "attention",
+            "spectacles", "edmund", "ulcerous", "pitiful", "christendom", "shortly", "sole",
+            "victress", "spectatorship", "and", "til", "fal", "his", "own", "tuition", "of",
+            "furthest", "inch", "manned", "horse", "mightful", "gods", "cheval", "volant",
+            "ominous", "ending", "bestow", "equally", "hampton", "to", "item", "anchovy", "hearer",
+            "weeping", "distasteful", "looks", "stalls", "flung", "pug", "tooth", "jer", "doctor",
+            "shrowd", "the", "sun", "begin", "flier", "mark", "metaphor", "stink", "disgrace",
+            "bewail", "remonstrance", "of", "terrace", "king", "foretell", "some", "choir", "fell",
+            "captivate", "talbot", "orb", "continent", "rood", "day", "cashier", "worship", "pody",
+            "in", "mummy", "maw", "sorrow", "silvia", "offence", "philomel", "dotage", "terms",
+            "inwards", "to", "learn", "happiest", "nicanor", "roman", "disme", "hath", "clutch",
+            "d", "tabourer", "he", "rush", "candle", "method", "in", "soothe", "when", "zone",
+            "make", "faith", "sir", "rancour", "o", "brunt", "of", "progne", "i", "sacrilegious",
+            "thief", "slain", "falls", "dullard", "in", "beak", "even", "hebrew", "will", "staff",
+            "sixpenny", "wheresome", "er", "bewray", "whose", "rome", "titu", "yielding", "rescue",
+            "everyone", "will", "construction", "caiu", "thee", "well", "in", "the", "8d", "item",
+            "commixture", "shown", "diversity", "of", "cannibal", "given", "needless", "jealosy",
+            "fumiter", "and", "armoury", "luciu", "ensemble", "de", "knead", "clod", "foresay",
+            "it", "enticeth", "thee", "pug", "tooth", "receipt", "thereof", "coronet", "collar",
+            "thicket", "please", "powers", "above", "grandfather", "roger", "incision", "forget",
+            "woof", "to", "zany", "olivia", "stare", "alonso", "calmie", "custure", "jangle", "out",
+            "disinherit", "thine", "ballow", "be", "induce", "by", "misthought", "for", "malice",
+            "towards", "urswick", "derby", "mare", "together", "regarding", "that", "endurest",
+            "betwixt", "heft", "i", "hob", "nob", "stygian", "bank", "premise", "flame", "afflict",
+            "merely", "fume", "epicurean", "sphinx", "as", "enchase", "with", "unlucky", "manage",
+            "widower", "shortly", "misbeliever", "cut", "vial", "pour", "certainly", "aunchient",
+            "cassandra", "raving", "verger", "with", "garbage", "imogen", "conduit", "girl",
+            "outrage", "withdraw", "incur", "a", "shouldest", "strike", "loss", "assume", "george",
+            "stanley", "vomit", "empty", "untroubled", "soul", "extremity", "pursue", "away",
+            "exeunt", "unseen", "unvisited", "beshrew", "me", "oberon", "fairy", "unlike", "each",
+            "scratch", "titania", "abstemious", "or", "departure", "nerissa", "clapp", "d",
+            "tickle", "commodity", "brittany", "received", "climbeth", "tamora", "hurtle", "from",
+            "lee", "d", "opulent", "throne", "forthwith", "dismiss", "imputation", "laid", "debt",
+            "wither", "obedience", "upward", "erewhile", "silviu", "certain", "dukedom",
+            "undercrest", "your", "miscall", "retire", "league", "inviolable", "alas", "poor",
+            "clownish", "fool", "shipman", "s", "polydote", "return", "lightning", "flash",
+            "mischievous", "foul", "proteu", "lucetta", "pedler", "s", "bowed", "as", "statist",
+            "though", "pold", "i", "porringer", "fell", "enfree", "antenor", "marry", "sir",
+            "green", "sickness", "ruff", "on", "fel", "from", "offendress", "against", "epicure",
+            "pompey", "abhorr", "dst", "zenelophon", "and", "ale", "rascal", "respect", "tradition",
+            "elm", "answer", "elbe", "where", "savour", "nobly" };
+
+    public static void runQueries(Retriever r, String[] set, int numTermsAtATime) {
+        int len = set.length, queryNum = 1;
+        for (int i = 0; i < len;) {
+            String[] query = Arrays.copyOfRange(set, i, i + numTermsAtATime);
+            System.out.println("Query #" + queryNum + ": " + Arrays.toString(query));
+            // top 10 results - but don't print them since
+            // this is a timing experiment anyways
+            System.out.println(r.retrieveQuery(query, 10));
+            i += numTermsAtATime;
+            queryNum++;
+        }
+    }
+
     public static void main(String args[]) {
 
         boolean generateRandomQueries = false, queryRetrieval = false, recordTermStatistics = false;
@@ -134,7 +315,7 @@ public class QueryRetriever {
         options.addOption(rOption);
 
         options.addOption("q", "run-query", true,
-                "Run query-retrieval. 100 sets of 7-term query. Requires 1 arg: the index path on disk.");
+                "Run query-retrieval. 100 sets of 7-term query and 14-term query. Requires 1 arg: the index path on disk.");
 
         options.addOption("s", "get-stats", true,
                 "Get df/tf for 100 sets of 7-term query. Requires 1 arg: the index path on disk.");
@@ -187,16 +368,11 @@ public class QueryRetriever {
             DocAtATimeRetriever retriever = new DocAtATimeRetriever(index, index.getNumDocs());
 
             // query retrieval using 7 terms from the array at a time
-            int len = SEVEN_TERM_QUERY_SET.length, queryNum = 1;
-            for (int i = 0; i < len;) {
-                String[] query = Arrays.copyOfRange(SEVEN_TERM_QUERY_SET, i, i + 7);
-                System.out.println("Query #" + queryNum + ": " + Arrays.toString(query));
+            runQueries(retriever, SEVEN_TERM_QUERY_SET, 7);
 
-                // top 10 results
-                System.out.println(retriever.retrieveQuery(query, 10));
-                i += 7;
-                queryNum++;
-            }
+            // query retrieval using 7 terms from the array at a time
+            runQueries(retriever, FOURTEEN_TERM_QUERY_SET, 14);
+
         } else if (recordTermStatistics) {
             InvertedFileIndex index = new InvertedFileIndex(indexPath);
             int len = SEVEN_TERM_QUERY_SET.length;
