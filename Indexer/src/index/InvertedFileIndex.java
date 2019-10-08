@@ -235,8 +235,8 @@ public class InvertedFileIndex extends Index {
                 while ((line = termToOffsetLookupFile.readLine()) != null) {
                     String[] terms = line.split("\\s+");
                     int offset = Integer.valueOf(terms[1]);
-                    int df = Integer.valueOf(terms[1]); // document frequency
-                    int cf = Integer.valueOf(terms[2]); // collection-frequency
+                    int df = Integer.valueOf(terms[2]); // document frequency
+                    int cf = Integer.valueOf(terms[3]); // collection-frequency
                     list.add(new SimpleEntry<String, Integer>(terms[0], offset));
                     termtoDFMap.put(terms[0], df);
                     termtoCFMap.put(terms[0], cf);
