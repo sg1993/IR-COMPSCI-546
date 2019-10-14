@@ -36,7 +36,7 @@ public class DocAtATimeRetriever extends Retriever {
     }
 
     @Override
-    public List<Entry<Integer, Double>> retrieveQuery(String[] query, int k) {
+    public List<Entry<Integer, Double>> retrieveQuery(String[] query, int k, Evaluator evaluator) {
 
         PriorityQueue<Map.Entry<Integer, Double>> priorityQueue = new PriorityQueue<Map.Entry<Integer, Double>>(
                 new Comparator<Map.Entry<Integer, Double>>() {
@@ -78,8 +78,9 @@ public class DocAtATimeRetriever extends Retriever {
                 HashMap<Integer, Posting> postings = iList.getPostings();
                 if (postings.containsKey(docId)) {
                     // we have the term in this doc
-                    // add the raw-count to this doc's score
-                    curDocScore += postings.get(docId).getTermFrequency();
+                    // ask the evaluator to score this doc w.r.t this query term
+                    curDocScore += evaluator.getDocScoreForQueryTerm(iList.getTerm(),
+                            postings.get(docId).getTermFrequency(), docId);
                 }
             }
 

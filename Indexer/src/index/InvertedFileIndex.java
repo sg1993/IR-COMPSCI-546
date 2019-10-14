@@ -417,6 +417,7 @@ public class InvertedFileIndex extends Index {
         return constructInvertedListFromByteArray(compressed, buffer, term);
     }
 
+    @Override
     public ArrayList<String> getVocabListFromIndex() {
         ArrayList<String> result = new ArrayList<String>();
 
@@ -433,6 +434,7 @@ public class InvertedFileIndex extends Index {
     }
 
     // returns frequency of a term over the entire corpus
+    @Override
     public int getCollectionFrequencyForTerm(String term) {
 
         // load the lookup table if not already done
@@ -447,6 +449,7 @@ public class InvertedFileIndex extends Index {
     }
 
     // return how many documents does the term appear in atleast once
+    @Override
     public int getDocumentFrequencyForTerm(String term) {
 
         // load the lookup table if not already done
@@ -460,6 +463,7 @@ public class InvertedFileIndex extends Index {
         return 0;
     }
 
+    @Override
     public int getNumDocs() {
 
         // load the lookup table if not already done
@@ -471,6 +475,7 @@ public class InvertedFileIndex extends Index {
         return numDocs;
     }
 
+    @Override
     public int getNumWordsInCollection() {
         // load the lookup table if not already done
         if (termToOffsetMap == null) {
@@ -485,6 +490,7 @@ public class InvertedFileIndex extends Index {
         return count;
     }
 
+    @Override
     public int getNumWordsInDocument(int docId) {
 
         // load the lookup table if not already done
@@ -503,6 +509,7 @@ public class InvertedFileIndex extends Index {
         return count;
     }
 
+    @Override
     public ArrayList<String> getBackingDocumentIDs() {
         // load the lookup table if not already done
         if (termToOffsetMap == null) {

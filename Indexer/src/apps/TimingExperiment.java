@@ -4,6 +4,7 @@ import java.util.Arrays;
 
 import index.InvertedFileIndex;
 import retriever.DocAtATimeRetriever;
+import retriever.RawCountEvaluator;
 import retriever.Retriever;
 
 public class TimingExperiment {
@@ -273,7 +274,8 @@ public class TimingExperiment {
             // System.out.println("Query #" + queryNum + ": " + Arrays.toString(query));
             // top 10 results - but don't print them since
             // this is a timing experiment anyways
-            r.retrieveQuery(query, 10);
+            RawCountEvaluator evaluator = new RawCountEvaluator();
+            r.retrieveQuery(query, 10, evaluator);
             i += numTerms;
         }
     }

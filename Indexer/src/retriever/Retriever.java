@@ -20,7 +20,8 @@ public abstract class Retriever {
     // and uses the Index to retrieve.
     // The method returns a List of top k documents that score well according to
     // some/any scoring method.
-    public abstract List<Map.Entry<Integer, Double>> retrieveQuery(String[] query, int k);
+    public abstract List<Map.Entry<Integer, Double>> retrieveQuery(String[] query, int k,
+            Evaluator evaluator);
 
     // This method computes Dice's coefficient for 2 terms.
     abstract double computeDiceCoefficient(String a, String b);

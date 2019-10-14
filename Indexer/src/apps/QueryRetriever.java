@@ -16,8 +16,8 @@ import org.apache.commons.cli.ParseException;
 
 import index.InvertedFileIndex;
 import index.InvertedList;
-import reader.Scene;
 import retriever.DocAtATimeRetriever;
+import retriever.RawCountEvaluator;
 import retriever.Retriever;
 
 public class QueryRetriever {
@@ -287,7 +287,8 @@ public class QueryRetriever {
             System.out.println("Query #" + queryNum + ": " + Arrays.toString(query));
             // top 10 results - but don't print them since
             // this is a timing experiment anyways
-            System.out.println(r.retrieveQuery(query, 10));
+            RawCountEvaluator evaluator = new RawCountEvaluator();
+            System.out.println(r.retrieveQuery(query, 10, evaluator));
             i += numTermsAtATime;
             queryNum++;
         }
