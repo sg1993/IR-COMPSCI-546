@@ -2,6 +2,7 @@ package retriever;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 import index.Index;
 
@@ -18,6 +19,10 @@ public class BM25Evaluator extends Evaluator {
 
     private ArrayList<Integer> docLengths = null;
 
+    // map of "bm25#"<query-term>#"<docid> : just a weird sequence that has less
+    // chance of clashing
+    private HashMap<String, Boolean> seenQueryTerm = null;
+
     public BM25Evaluator(Index i, String[] query, ArrayList<Integer> lengths) {
         index = i;
         N = index.getNumDocs();
@@ -33,10 +38,21 @@ public class BM25Evaluator extends Evaluator {
             termFrequencyInQuery.put(s, count);
         }
         docLengths = lengths;
+        seenQueryTerm = new HashMap<String, Boolean>();
     }
 
     @Override
     public double getDocScoreForQueryTerm(String queryTerm, int termFrequency, int docId) {
+
+        // check if the term was already evaluated for this doc
+        if (seenQueryTerm.containsKey("bm25#" + queryTerm + "#" + docId)) {
+            // we have already seen this term for this docId
+            // return a score of 0
+            return 0.0;
+        }
+
+        // mark the term as "seen" for this document
+        seenQueryTerm.put("bm25#" + queryTerm + "#" + docId, true);
 
         // document-frequency of this query-term
         // (how many documents does it appear atleast once)

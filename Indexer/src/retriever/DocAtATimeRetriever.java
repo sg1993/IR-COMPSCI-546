@@ -72,6 +72,7 @@ public class DocAtATimeRetriever extends Retriever {
         for (int i = 0; i < numDocs; i++) {
             int docId = i;
             Double curDocScore = 0.0;
+            boolean docAppearsInAtleastOneTerm = false;
 
             // check each term's I-List and accumulate the score for this doc
             for (InvertedList iList : invertedLists) {
@@ -79,12 +80,13 @@ public class DocAtATimeRetriever extends Retriever {
                 if (postings.containsKey(docId)) {
                     // we have the term in this doc
                     // ask the evaluator to score this doc w.r.t this query term
+                    docAppearsInAtleastOneTerm = true;
                     curDocScore += evaluator.getDocScoreForQueryTerm(iList.getTerm(),
                             postings.get(docId).getTermFrequency(), docId);
                 }
             }
 
-            if (curDocScore != 0)
+            if (docAppearsInAtleastOneTerm)
                 priorityQueue.add(
                         new AbstractMap.SimpleEntry<Integer, Double>(docId, (-1) * curDocScore));
         }
