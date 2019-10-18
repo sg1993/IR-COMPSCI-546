@@ -2,7 +2,6 @@ package retriever;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
 
 import index.Index;
 
@@ -17,6 +16,7 @@ public class BM25Evaluator extends Evaluator {
 
     HashMap<String, Integer> termFrequencyInQuery = null;
 
+    // pre-computed documents lengths for all docs in the collection
     private ArrayList<Integer> docLengths = null;
 
     // map of "bm25#"<query-term>#"<docid> : just a weird sequence that has less

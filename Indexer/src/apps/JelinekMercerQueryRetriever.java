@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.Map.Entry;
 
 import index.InvertedFileIndex;
-import retriever.BM25Evaluator;
 import retriever.DocAtATimeRetriever;
+import retriever.JelinekMercerEvaluator;
 
-public class BM25QueryRetriever {
+public class JelinekMercerQueryRetriever {
 
     private static String[] QUERY_SET = { "the king queen royalty", "servant guard soldier",
             "hope dream sleep", "ghost spirit", "fool jester player", "to be or not to be", "alas",
@@ -103,13 +103,13 @@ public class BM25QueryRetriever {
             System.out.println("Scene " + i + " has " + l + " words");
         }
 
-        String runTag = "shibingeorge-bm-25-k1=1.2-k2=100.0";
+        String runTag = "shibingeorge-ql-jm-lambda=0.3";
         ArrayList<String> id = index.getBackingDocumentIDs();
 
         Integer queryNum = 1;
         for (String s : QUERY_SET) {
             String[] query = s.split("\\s+");
-            BM25Evaluator evaluator = new BM25Evaluator(index, query, docLength);
+            JelinekMercerEvaluator evaluator = new JelinekMercerEvaluator(index, docLength);
             Integer rank = 1;
             for (Entry<Integer, Double> entry : retriever.retrieveQuery(query, 10, evaluator)) {
                 String sceneId = id.get(entry.getKey()).split("#")[1];
