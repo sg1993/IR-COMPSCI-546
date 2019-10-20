@@ -68,25 +68,37 @@ public class DocAtATimeRetriever extends Retriever {
             invertedLists.add(list);
         }
 
+        // check if this evaluator accepts even those documents
+        // that don't have a query term to assign them a
+        // background-probability score
+        boolean evaluatorAssignsBackgroundProbability = evaluator.assignsBackgroundProbability();
+
         // iterate through each document
         for (int i = 0; i < numDocs; i++) {
             int docId = i;
             Double curDocScore = 0.0;
-            boolean docAppearsInAtleastOneTerm = false;
+            boolean docScored = false;
 
             // check each term's I-List and accumulate the score for this doc
             for (InvertedList iList : invertedLists) {
                 HashMap<Integer, Posting> postings = iList.getPostings();
                 if (postings.containsKey(docId)) {
-                    // we have the term in this doc
-                    // ask the evaluator to score this doc w.r.t this query term
-                    docAppearsInAtleastOneTerm = true;
+                    // We have the term in this doc.
+                    // Ask the evaluator to score this doc w.r.t this query term
+                    docScored = true;
                     curDocScore += evaluator.getDocScoreForQueryTerm(iList.getTerm(),
                             postings.get(docId).getTermFrequency(), docId);
+                } else if (evaluatorAssignsBackgroundProbability) {
+                    // the evaluator accepts even those docs which don't have the query term.
+                    docScored = true;
+                    // the term-frequency however should be sent as 0 since
+                    // the doc doesn't have the term in it.
+                    curDocScore += evaluator.getDocScoreForQueryTerm(iList.getTerm(), 0, docId);
                 }
             }
 
-            if (docAppearsInAtleastOneTerm)
+            // add to the Priority-Queue if the doc was scored atleast once!
+            if (docScored)
                 priorityQueue.add(
                         new AbstractMap.SimpleEntry<Integer, Double>(docId, (-1) * curDocScore));
         }

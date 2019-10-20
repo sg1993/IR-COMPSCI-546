@@ -19,7 +19,7 @@ public class DirichletEvaluator extends Evaluator {
     // pre-computed documents lengths for all docs in the collection
     private ArrayList<Integer> docLengths = null;
 
-    private double mu = 0.3;
+    private double mu = 1500;
 
     public DirichletEvaluator(Index i, ArrayList<Integer> lengths) {
         index = i;
@@ -34,5 +34,12 @@ public class DirichletEvaluator extends Evaluator {
                 / (double) ((index.getNumWordsInCollection()) * denominator);
 
         return Math.log((foregroundProbability + backgroundProbability));
+    }
+
+    @Override
+    public boolean assignsBackgroundProbability() {
+        // The Dirichlet evaluator assigns background probability scores
+        // to documents which don't have the query term.
+        return true;
     }
 }

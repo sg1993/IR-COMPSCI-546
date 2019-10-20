@@ -9,4 +9,11 @@ public class RawCountEvaluator extends Evaluator {
         return termFrequency;
     }
 
+    @Override
+    public boolean assignsBackgroundProbability() {
+        // The raw-count evaluator doesn't assign background probability scores
+        // to documents which don't have the query term.
+        return false;
+    }
+
 }

@@ -103,7 +103,7 @@ public class DirichletQueryRetriever {
             System.out.println("Scene " + i + " has " + l + " words");
         }
 
-        String runTag = "shibingeorge-ql-jm-lambda=0.3";
+        String runTag = "shibingeorge-ql-dir-mu=1500";
         ArrayList<String> id = index.getBackingDocumentIDs();
 
         Integer queryNum = 1;

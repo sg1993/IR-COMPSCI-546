@@ -103,7 +103,7 @@ public class BM25QueryRetriever {
             System.out.println("Scene " + i + " has " + l + " words");
         }
 
-        String runTag = "shibingeorge-bm-25-k1=1.2-k2=100.0";
+        String runTag = "shibingeorge-bm-25-k1=1.2-k2=100.0-b=0.75";
         ArrayList<String> id = index.getBackingDocumentIDs();
 
         Integer queryNum = 1;

@@ -73,4 +73,11 @@ public class BM25Evaluator extends Evaluator {
         return score;
     }
 
+    @Override
+    public boolean assignsBackgroundProbability() {
+        // The BM-25 evaluator doesn't assign background probability scores
+        // to documents which don't have the query term.
+        return false;
+    }
+
 }

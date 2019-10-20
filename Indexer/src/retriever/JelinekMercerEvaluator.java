@@ -19,7 +19,7 @@ public class JelinekMercerEvaluator extends Evaluator {
     // pre-computed documents lengths for all docs in the collection
     private ArrayList<Integer> docLengths = null;
 
-    private double lambda = 0.3;
+    private double lambda = 0.2;
 
     public JelinekMercerEvaluator(Index i, ArrayList<Integer> lengths) {
         index = i;
@@ -34,6 +34,13 @@ public class JelinekMercerEvaluator extends Evaluator {
                 / (index.getNumWordsInCollection());
 
         return Math.log(foregroundProbability + backgroundProbability);
+    }
+
+    @Override
+    public boolean assignsBackgroundProbability() {
+        // The J-M evaluator assigns background probability scores
+        // to documents which don't have the query term
+        return true;
     }
 
 }
