@@ -1,0 +1,13 @@
+cymbeline:4.3 1
+twelfth_night:3.0 1
+cymbeline:3.1 1
+romeo_and_juliet:4.0 1
+midsummer_nights_dream:3.0 2
+antony_and_cleopatra:1.0 2
+romeo_and_juliet:0.3 1
+richard_iii:0.3 2
+richard_iii:3.1 1
+richard_iii:4.2 3
+merchant_of_venice:1.4 1
+macbeth:2.1 1
+hamlet:2.0 1
