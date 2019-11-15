@@ -5,10 +5,11 @@ import java.util.Arrays;
 
 import index.InvertedFileIndex;
 import inferencenetwork.AndBeliefNode;
+import inferencenetwork.FilterRejectQueryNode;
+import inferencenetwork.FilterRequireQueryNode;
+import inferencenetwork.InferenceNetworkRetriever;
 import inferencenetwork.OrderedWindowProximityNode;
-import inferencenetwork.QueryNode;
 import inferencenetwork.TermProximityNode;
-import inferencenetwork.UnorderedWindowProximityNode;
 import retriever.DirichletEvaluator;
 import retriever.Evaluator;
 
@@ -82,35 +83,41 @@ public class InfNetQueryRetriever {
                 663, 1571, 1227, 2294, 1404, 658, 1483, 164, 518, 209, 400, 1035, 2380, 2282, 321,
                 1994, 553, 771, 394, 1023, 973, 1031, 318, 470, 4572, 2037, 160, 109, 748));
 
-        Evaluator evaluator = new DirichletEvaluator(index, docLength);
+        Evaluator evaluator = new DirichletEvaluator(1500/* mu */, index, docLength);
 
-        // the king queen royalty
-        TermProximityNode tprxmNod0 = new TermProximityNode(evaluator,
-                index.getInvertedListForTerm("the"));
-        TermProximityNode tprxmNode1 = new TermProximityNode(evaluator,
-                index.getInvertedListForTerm("king"));
-        TermProximityNode tprxmNode2 = new TermProximityNode(evaluator,
-                index.getInvertedListForTerm("queen"));
-        TermProximityNode tprxmNode3 = new TermProximityNode(evaluator,
-                index.getInvertedListForTerm("royalty"));
-        TermProximityNode tprxmNode4 = new TermProximityNode(evaluator,
-                index.getInvertedListForTerm("to"));
-        TermProximityNode tprxmNode5 = new TermProximityNode(evaluator,
-                index.getInvertedListForTerm("be"));
-        /*
-         * // #And Belief Node
-         * AndBeliefNode andBeliefNode = new AndBeliefNode();
-         * andBeliefNode.setChildren(new ArrayList<QueryNode>(
-         * Arrays.asList(tprxmNod0, tprxmNode1, tprxmNode2, tprxmNode3)));
-         * UnorderedWindowProximityNode uwnNode = new
-         * UnorderedWindowProximityNode(evaluator, 20);
-         * uwnNode.setChildren(new ArrayList<TermProximityNode>(Arrays.asList(tprxmNod0,
-         * tprxmNode1,
-         * tprxmNode2, tprxmNode3, tprxmNode4, tprxmNode5)));
-         * System.out.println(andBeliefNode.score(55));
-         */
-        OrderedWindowProximityNode ownNode = new OrderedWindowProximityNode(evaluator, 500);
-        ownNode.setChildren(new ArrayList<TermProximityNode>(Arrays.asList(tprxmNod0, tprxmNode1,
-                tprxmNode2, tprxmNode3, tprxmNode4, tprxmNode5)));
+        OrderedWindowProximityNode ownNode = new OrderedWindowProximityNode(evaluator, 10);
+        ownNode.setChildren(getTermProximityNodesFromQuery("to be or not to be", evaluator, index));
+        InferenceNetworkRetriever retriever = new InferenceNetworkRetriever(index);
+        System.out.println(retriever.retrieveQuery(ownNode, 10));
+
+        AndBeliefNode andNode = new AndBeliefNode();
+        andNode.setChildren(
+                getTermProximityNodesFromQuery("the king queen royalty", evaluator, index));
+        // System.out.println(retriever.retrieveQuery(andNode, 10));
+
+        // test filter nodes
+        TermProximityNode termProximityNode = new TermProximityNode(evaluator,
+                index.getInvertedListForTerm("horatio"));
+        // FilterRequireQueryNode filterRequireQueryNode = new FilterRequireQueryNode(
+        // termProximityNode, ownNode);
+        FilterRejectQueryNode filterNode = new FilterRejectQueryNode(
+                termProximityNode, ownNode);
+        // score only the document that has "horatio" in it
+        System.out.println(retriever.retrieveQuery(filterNode, 10));
+    }
+
+    private static ArrayList<TermProximityNode> getTermProximityNodesFromQuery(String query,
+            Evaluator evaluator, InvertedFileIndex index) {
+
+        ArrayList<TermProximityNode> list = new ArrayList<TermProximityNode>();
+        String[] terms = query.split("\\s+");
+
+        for (String term : terms) {
+            TermProximityNode node = new TermProximityNode(evaluator,
+                    index.getInvertedListForTerm(term));
+            list.add(node);
+        }
+
+        return list;
     }
 }

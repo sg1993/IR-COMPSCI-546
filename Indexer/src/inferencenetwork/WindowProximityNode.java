@@ -63,11 +63,11 @@ public abstract class WindowProximityNode extends ProximityNode {
 
     @Override
     public int nextCandidateDocument() {
-        // return the next doc from docSet which already has the pre-computed documents
-        // which contain atleast one occurrence of the window
+        // return the next doc from docSet since docSet
+        // already has the pre-computed list of documents
+        // that contain atleast one occurrence of the window
         if (docIndex < docSet.size()) {
-            docIndex++; // increment docIndex for future candidates
-            return docSet.get(docIndex - 1);
+            return docSet.get(docIndex);
         }
 
         // else, we have no more candidates.
@@ -76,7 +76,15 @@ public abstract class WindowProximityNode extends ProximityNode {
     }
 
     @Override
-    public double score(int docId) {
+    public void skipTo(int docId) {
+        // skip till the docIndex is on a doc with id >= docId
+        while (docIndex < docSet.size() && docSet.get(docIndex) < docId) {
+            docIndex++;
+        }
+    }
+
+    @Override
+    public Double score(int docId) {
         if (docSet.contains(docId)) {
             return evaluator.getDocScoreForQueryWindow(windowCounts.get(docId), docId,
                     collectionFrequency);
@@ -90,8 +98,13 @@ public abstract class WindowProximityNode extends ProximityNode {
     }
 
     @Override
-    public void skipTo(int docId) {
-        // nothing to do really
+    protected boolean canScoreDoc(int docId) {
+
+        if (docSet.contains(docId)) {
+            return true;
+        }
+
+        return false;
     }
 
 }

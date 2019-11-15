@@ -17,7 +17,7 @@ public class TermProximityNode extends ProximityNode {
 
     @Override
     // return score in log-space and not probability-space
-    public double score(int docId) {
+    public Double score(int docId) {
         HashMap<Integer, Posting> postings = iList.getPostings();
         if (postings.containsKey(docId)) {
             return evaluator.getDocScoreForQueryTerm(iList.getTerm(),
@@ -51,6 +51,20 @@ public class TermProximityNode extends ProximityNode {
 
         // just ask the backing inverted-list to skip-to the docId
         iList.skipTo(docId);
+    }
+
+    @Override
+    // a term-proximity node can only score a document that
+    // is present in its inverted list
+    protected boolean canScoreDoc(int docId) {
+
+        Posting curPosting = iList.getCurrentPosting();
+
+        if (curPosting != null) {
+            return (curPosting.getDocId() == docId);
+        }
+
+        return false;
     }
 
 }

@@ -18,4 +18,9 @@ public abstract class ProximityNode extends QueryNode {
         return iList;
     }
 
+    // should only be used for filter-reject/filter-require operations
+    // the proximity node (term/window) checks if this doc satisfies
+    // the proximity-operator
+    protected abstract boolean canScoreDoc(int docId);
+
 }

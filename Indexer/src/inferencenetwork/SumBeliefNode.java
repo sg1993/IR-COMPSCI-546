@@ -8,7 +8,7 @@ public class SumBeliefNode extends BeliefNode {
     }
 
     @Override
-    public double score(int docId) {
+    public Double score(int docId) {
         double score = 0.0;
 
         for (QueryNode child : children) {

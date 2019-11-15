@@ -28,12 +28,14 @@ public class InvertedList {
     // pointer to move around and skipping ahead
     private int postingsIndex;
 
+    private ArrayList<Integer> docSet = null;
+
     public InvertedList(String s) {
         term = s;
         postings = new LinkedHashMap<Integer, Posting>();
         numDocs = 0;
         collectionFrequency = 0;
-        postingsIndex = -1;
+        startIteration();
     }
 
     public String getTerm() {
@@ -123,10 +125,18 @@ public class InvertedList {
     public Posting getCurrentPosting() {
         Posting retval = null;
         try {
-            retval = postings.get(postingsIndex);
+            if (docSet == null) {
+                docSet = new ArrayList<Integer>();
+                for (Integer docId : postings.keySet()) {
+                    docSet.add(docId);
+                }
+            }
+
+            retval = postings.get(docSet.get(postingsIndex));
         } catch (IndexOutOfBoundsException ex) {
-            // ignore
+            // ex.printStackTrace();
         }
+
         return retval;
     }
 

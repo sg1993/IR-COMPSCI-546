@@ -1,8 +1,6 @@
 package inferencenetwork;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.stream.Collectors;
 
@@ -45,7 +43,6 @@ public class UnorderedWindowProximityNode extends WindowProximityNode {
                 docSet.remove(docId);
             }
         }
-        System.out.println(docSet);
 
         // woah, we have the candidate docs and their window-counts all ready!
         // time to score some docs!
@@ -63,6 +60,7 @@ public class UnorderedWindowProximityNode extends WindowProximityNode {
         return Integer.MAX_VALUE;
     }
 
+    @SuppressWarnings("serial")
     private void findUnorderedWindows(ArrayList<Integer> docs,
             ArrayList<InvertedList> childLists) {
         /*
@@ -92,8 +90,6 @@ public class UnorderedWindowProximityNode extends WindowProximityNode {
 
             // initialize count of windows in this doc to zero
             windowCounts.put(docId, 0);
-
-            int startChildIndex = -1;
 
             // get postings for this doc from all children's inverted-lists
             ArrayList<Posting> postings = new ArrayList<Posting>(
@@ -138,7 +134,6 @@ public class UnorderedWindowProximityNode extends WindowProximityNode {
 
                     // is this the first-positioned term as of now?
                     if (pos < startPos) {
-                        startChildIndex = i;
                         startPos = pos;
                     }
 

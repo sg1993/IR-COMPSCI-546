@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import index.Index;
+import inferencenetwork.QueryNode;
 
 public abstract class Retriever {
 
@@ -20,9 +21,21 @@ public abstract class Retriever {
     // and uses the Index to retrieve.
     // The method returns a List of top k documents that score well according to
     // some/any scoring method.
-    public abstract List<Map.Entry<Integer, Double>> retrieveQuery(String[] query, int k,
-            Evaluator evaluator);
+    public List<Map.Entry<Integer, Double>> retrieveQuery(String[] query, int k,
+            Evaluator evaluator) {
+        return null;
+    }
+
+    // This retriveQuery() method takes a QueryNode as argument and uses
+    // the Bayesian inference network to score all the documents.
+    // The method returns a List of top k documents that score well according to
+    // some/any scoring method.
+    public List<Map.Entry<Integer, Double>> retrieveQuery(QueryNode q, int k) {
+        return null;
+    }
 
     // This method computes Dice's coefficient for 2 terms.
-    abstract double computeDiceCoefficient(String a, String b);
+    protected double computeDiceCoefficient(String a, String b) {
+        return 0.0;
+    }
 }

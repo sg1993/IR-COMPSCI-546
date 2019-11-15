@@ -7,7 +7,7 @@ public class AndBeliefNode extends BeliefNode {
     }
 
     @Override
-    public double score(int docId) {
+    public Double score(int docId) {
         double score = 1.0;
 
         for (QueryNode child : children) {

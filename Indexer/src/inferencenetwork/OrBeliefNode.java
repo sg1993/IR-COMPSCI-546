@@ -6,7 +6,7 @@ public class OrBeliefNode extends BeliefNode {
         super();
     }
 
-    public double score(int docId) {
+    public Double score(int docId) {
         double score = 0.0;
         for (QueryNode child : children) {
             score *= (1.0 - Math.exp(child.score(docId)));

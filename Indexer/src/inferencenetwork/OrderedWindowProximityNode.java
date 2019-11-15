@@ -2,7 +2,6 @@ package inferencenetwork;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.stream.Collectors;
 
@@ -44,7 +43,6 @@ public class OrderedWindowProximityNode extends WindowProximityNode {
                 docSet.remove(docId);
             }
         }
-        System.out.println(docSet);
 
         // woah, we have the candidate docs and their window-counts all ready!
         // time to score some docs!

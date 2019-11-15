@@ -3,6 +3,7 @@ package retriever;
 import java.util.ArrayList;
 
 import index.Index;
+import index.InvertedFileIndex;
 
 /*
  * This is a query-likelihood model which uses
@@ -19,9 +20,15 @@ public class DirichletEvaluator extends Evaluator {
     // pre-computed documents lengths for all docs in the collection
     private ArrayList<Integer> docLengths = null;
 
-    private double mu = 1500;
+    private double mu = 1500.0;
 
     public DirichletEvaluator(Index i, ArrayList<Integer> lengths) {
+        index = i;
+        docLengths = lengths;
+    }
+
+    public DirichletEvaluator(double mu, InvertedFileIndex i, ArrayList<Integer> lengths) {
+        this.mu = mu;
         index = i;
         docLengths = lengths;
     }
