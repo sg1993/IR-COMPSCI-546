@@ -71,6 +71,9 @@ public class OrderedWindowProximityNode extends WindowProximityNode {
                 int posB = positionsB.get(j);
                 if (posA >= posB)
                     continue;
+                // there must 'window-1' or less terms between posB and posA
+                // i.e. posB-posA-1 <= window-1
+                // or posB-posA <= window
                 if (posB - posA <= window) {
                     A.add(posB);
                     result.add(A);

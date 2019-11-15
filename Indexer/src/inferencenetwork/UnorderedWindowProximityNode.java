@@ -149,7 +149,10 @@ public class UnorderedWindowProximityNode extends WindowProximityNode {
 
                 // we have a range [startPos, endPos] which contains all the terms
                 // check if this range fits the window-size criteria
-                if (endPos - startPos <= windowSize) {
+                // there must be at most 'windowSize' terms in the window
+                // including startPos and endPos.
+                // i.e. endPos - startPos + 1 <= windowSize
+                if (endPos - startPos + 1 <= windowSize) {
                     // yay! a window
                     windowCount += 1;
                     System.out.println(
