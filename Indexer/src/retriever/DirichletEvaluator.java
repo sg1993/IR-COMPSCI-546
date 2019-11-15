@@ -36,6 +36,19 @@ public class DirichletEvaluator extends Evaluator {
         return Math.log((foregroundProbability + backgroundProbability));
     }
 
+    // when it comes to a window operator (unordered or ordered)
+    // we don't want to compute collection-frequency at scoring-time.
+    // let the caller provide that for us.
+    @Override
+    public double getDocScoreForQueryWindow(int termFrequency, int docId, int collectionFrequency) {
+        double denominator = docLengths.get(docId) + mu;
+        double foregroundProbability = (double) termFrequency / (double) denominator;
+        double backgroundProbability = mu * collectionFrequency
+                / (double) ((index.getNumWordsInCollection()) * denominator);
+
+        return Math.log((foregroundProbability + backgroundProbability));
+    }
+
     @Override
     public boolean assignsBackgroundProbability() {
         // The Dirichlet evaluator assigns background probability scores

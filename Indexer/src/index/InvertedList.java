@@ -25,11 +25,15 @@ public class InvertedList {
     // the value is the index in which this docId is added to list
     LinkedHashMap<Integer, Posting> postings;
 
+    // pointer to move around and skipping ahead
+    private int postingsIndex;
+
     public InvertedList(String s) {
         term = s;
         postings = new LinkedHashMap<Integer, Posting>();
         numDocs = 0;
         collectionFrequency = 0;
+        postingsIndex = -1;
     }
 
     public String getTerm() {
@@ -82,6 +86,48 @@ public class InvertedList {
 
     public HashMap<Integer, Posting> getPostings() {
         return postings;
+    }
+
+    /**
+     * reset the list pointer to the first element
+     */
+    public void startIteration() {
+        postingsIndex = 0;
+    }
+
+    /**
+     * are there any more?
+     * 
+     * @return true if there are remaining elements in the list
+     */
+    public boolean hasMore() {
+        return (postingsIndex >= 0 && postingsIndex < postings.size());
+    }
+
+    /**
+     * skip to or past the specified document id
+     * 
+     * @param docid the id to skip to
+     * 
+     */
+    public void skipTo(int docid) {
+        while (postingsIndex < postings.size() && getCurrentPosting().getDocId() < docid) {
+            postingsIndex++;
+        }
+    }
+
+    /**
+     * @return the current posting in the list or null if the list is empty or
+     *         consumed
+     */
+    public Posting getCurrentPosting() {
+        Posting retval = null;
+        try {
+            retval = postings.get(postingsIndex);
+        } catch (IndexOutOfBoundsException ex) {
+            // ignore
+        }
+        return retval;
     }
 
     public static boolean compareTwoInvertedLists(InvertedList l1, InvertedList l2) {
