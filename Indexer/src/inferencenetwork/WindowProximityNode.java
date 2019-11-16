@@ -74,12 +74,14 @@ public abstract class WindowProximityNode extends ProximityNode {
     @Override
     public Double score(int docId) {
 
-        // since we would have been asked to skipTo(docId) previously,
-        // if the currentPosting is not docId, we don't have docId in our list
         if (iList == null) {
+            // if no iList exists, the probability-score is 0
+            // so the log-space score is log(0) i.e. -ve infinity.
             return Double.NEGATIVE_INFINITY;
         }
 
+        // since we would have been asked to skipTo(docId) previously,
+        // if the currentPosting is not docId, we don't have docId in our list
         Posting curPosting = iList.getCurrentPosting();
         if (curPosting != null && curPosting.getDocId() == docId) {
             /*

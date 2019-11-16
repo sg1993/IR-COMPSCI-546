@@ -19,6 +19,12 @@ public class TermProximityNode extends ProximityNode {
     // return score in log-space and not probability-space
     public Double score(int docId) {
 
+        if (iList == null) {
+            // if no iList exists, the probability-score is 0
+            // so the log-space score is log(0) i.e. -ve infinity.
+            return Double.NEGATIVE_INFINITY;
+        }
+
         HashMap<Integer, Posting> postings = iList.getPostings();
         if (postings.containsKey(docId)) {
             return evaluator.getDocScoreForQueryTerm(iList.getTerm(),
