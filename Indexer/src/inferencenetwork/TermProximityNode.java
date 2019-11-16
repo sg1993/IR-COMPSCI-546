@@ -34,18 +34,4 @@ public class TermProximityNode extends ProximityNode {
         }
     }
 
-    @Override
-    // a term-proximity node can only score a document that
-    // is present in its inverted list
-    protected boolean canScoreDoc(int docId) {
-
-        Posting curPosting = iList.getCurrentPosting();
-
-        if (curPosting != null) {
-            return (curPosting.getDocId() == docId);
-        }
-
-        return false;
-    }
-
 }

@@ -9,6 +9,7 @@ import java.util.Map.Entry;
 
 import index.InvertedFileIndex;
 import inferencenetwork.AndBeliefNode;
+import inferencenetwork.FilterQueryNode;
 import inferencenetwork.FilterRejectQueryNode;
 import inferencenetwork.FilterRequireQueryNode;
 import inferencenetwork.InferenceNetworkRetriever;
@@ -27,7 +28,7 @@ public class InfNetQueryRetriever {
             "hope dream sleep", "ghost spirit", "fool jester player", "to be or not to be", "alas",
             "alas poor", "alas poor yorick", "antony strumpet" };
 
-    // returns spaces needed to pad so that collumns in .trecrun files align
+    // returns spaces needed to pad so that columns in .trecrun files align
     private static String prettyPrintSpaces(int lengthNeeded, String whatIHave) {
         String spaces = "";
         int len = whatIHave.length();
@@ -109,6 +110,27 @@ public class InfNetQueryRetriever {
 
         String runTag = "shibingeorge-ql-dir-mu=1500";
         ArrayList<String> id = index.getBackingDocumentIDs();
+
+        /*
+         * filter operator test
+         * The phrase "same enter launce" is present only in doc 595.
+         * The phrase "when a man" is present in docs:
+         * [23, 162, 227, 411, 430, 595, 653, 658]
+         * A Filter-reject operator on filter "same enter launce" will score all
+         * documents above except 595
+         * A Filter-require operator on the same filter will score only 595 and ignore
+         * all other docs.
+         * OrderedWindowProximityNode fnode = new OrderedWindowProximityNode(evaluator,
+         * 1);
+         * fnode.setChildren(getTermProximityNodesFromQuery("same enter launce",
+         * evaluator, index));
+         * OrderedWindowProximityNode qnode = new OrderedWindowProximityNode(evaluator,
+         * 1);
+         * qnode.setChildren(getTermProximityNodesFromQuery("when a man", evaluator,
+         * index));
+         * FilterQueryNode node = new FilterRejectQueryNode(fnode, qnode);
+         * System.out.println(retriever.retrieveQuery(node, 10));
+         */
 
         /*
          * AND operators on the queries

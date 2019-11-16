@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.HashMap;
 
 import index.InvertedList;
+import index.Posting;
 import retriever.Evaluator;
 
 public abstract class WindowProximityNode extends ProximityNode {
@@ -28,9 +29,6 @@ public abstract class WindowProximityNode extends ProximityNode {
 
     // collection frequency of this window i.e. across all documents
     int collectionFrequency = 0;
-
-    // docIndex : index of the next candidate doc to be scored
-    protected int docIndex = Integer.MAX_VALUE;
 
     public WindowProximityNode(Evaluator evaluator, int windowSize) {
         super(evaluator);
@@ -76,7 +74,14 @@ public abstract class WindowProximityNode extends ProximityNode {
     @Override
     public Double score(int docId) {
 
-        if (docSet.contains(docId)) {
+        // since we would have been asked to skipTo(docId) previously,
+        // if the currentPosting is not docId, we don't have docId in our list
+        if (iList == null) {
+            return Double.NEGATIVE_INFINITY;
+        }
+
+        Posting curPosting = iList.getCurrentPosting();
+        if (curPosting != null && curPosting.getDocId() == docId) {
             /*
              * System.out.println(
              * docId + ": " + windowCounts.get(docId) + ", total: " + collectionFrequency);
@@ -90,16 +95,6 @@ public abstract class WindowProximityNode extends ProximityNode {
                 return Double.NEGATIVE_INFINITY;
             }
         }
-    }
-
-    @Override
-    protected boolean canScoreDoc(int docId) {
-
-        if (docSet.contains(docId)) {
-            return true;
-        }
-
-        return false;
     }
 
 }

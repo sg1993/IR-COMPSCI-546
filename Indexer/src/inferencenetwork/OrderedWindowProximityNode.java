@@ -45,9 +45,6 @@ public class OrderedWindowProximityNode extends WindowProximityNode {
 
         // woah, we have the candidate docs and their window-counts all ready!
         // time to score some docs!
-        // set the docIndex to the start so that nextCandidate..() can start churning
-        // out scores for docs
-        docIndex = 0;
     }
 
     private ArrayList<ArrayList<Integer>> findCandidatePositions(

@@ -48,6 +48,17 @@ public abstract class ProximityNode extends QueryNode {
     // should only be used for filter-reject/filter-require operations
     // the proximity node (term/window) checks if this doc satisfies
     // the proximity-operator
-    protected abstract boolean canScoreDoc(int docId);
+    protected boolean canScoreDoc(int docId) {
+
+        if (iList == null)
+            return false;
+
+        Posting curPosting = iList.getCurrentPosting();
+        if (curPosting != null && curPosting.getDocId() == docId) {
+            return true;
+        }
+
+        return false;
+    }
 
 }
