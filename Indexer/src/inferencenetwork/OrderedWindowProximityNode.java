@@ -15,9 +15,7 @@ public class OrderedWindowProximityNode extends WindowProximityNode {
         super(evaluator, w);
     }
 
-    public void setChildren(ArrayList<TermProximityNode> list) {
-
-        children = list;
+    public void createFakeInvertedList() {
 
         childILists = new ArrayList<InvertedList>(
                 children.stream()
@@ -28,7 +26,8 @@ public class OrderedWindowProximityNode extends WindowProximityNode {
         // first intersect the docs to get a candidate list of
         // documents to comb through searching for windows
         docSet = intersectDocs(childILists);
-        System.out.println("the terms appear together in these documents: " + docSet);
+        // System.out.println("the terms appear together in these documents: " +
+        // docSet);
 
         // now that we have the the set of documents to start with,
         // search for the actual windows in these documents
@@ -158,7 +157,13 @@ public class OrderedWindowProximityNode extends WindowProximityNode {
                     windowCount += 1;
                     // add all positions in window to the "seen" list
                     seen.addAll(window);
-                    System.out.println("valid window: " + window);
+                    // System.out.println("valid window: " + window);
+                    // add only the start-position of this window to the fake inverted list we're
+                    // creating for this ProximityNode
+                    if (iList == null) {
+                        iList = new InvertedList("<WINDOW_HOLDER_TERM>");
+                    }
+                    iList.addPositionToPosting(docId, window.get(0));
                 }
             }
             windowCounts.put(docId, windowCount);

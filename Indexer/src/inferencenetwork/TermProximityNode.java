@@ -18,6 +18,7 @@ public class TermProximityNode extends ProximityNode {
     @Override
     // return score in log-space and not probability-space
     public Double score(int docId) {
+
         HashMap<Integer, Posting> postings = iList.getPostings();
         if (postings.containsKey(docId)) {
             return evaluator.getDocScoreForQueryTerm(iList.getTerm(),
@@ -31,26 +32,6 @@ public class TermProximityNode extends ProximityNode {
                 return Double.NEGATIVE_INFINITY;
             }
         }
-    }
-
-    @Override
-    public int nextCandidateDocument() {
-
-        // nextCandidate for term node is the next doc in the list
-        Posting curPosting = iList.getCurrentPosting();
-        if (curPosting != null) {
-            return curPosting.getDocId();
-        }
-
-        // return max-value if we don't have any more documents to go through
-        return Integer.MAX_VALUE;
-    }
-
-    @Override
-    public void skipTo(int docId) {
-
-        // just ask the backing inverted-list to skip-to the docId
-        iList.skipTo(docId);
     }
 
     @Override

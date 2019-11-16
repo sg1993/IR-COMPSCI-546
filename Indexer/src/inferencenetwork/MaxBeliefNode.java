@@ -1,13 +1,13 @@
 package inferencenetwork;
 
-public class AndBeliefNode extends BeliefNode {
+public class MaxBeliefNode extends BeliefNode {
 
     @Override
     public Double score(int docId) {
-        double score = 1.0;
+        double score = Double.MIN_VALUE;
 
         for (QueryNode child : children) {
-            score *= Math.exp(child.score(docId));
+            score = Math.max(score, Math.exp(child.score(docId)));
         }
         // return scores in log-space
         return Math.log(score);

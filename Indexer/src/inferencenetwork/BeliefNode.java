@@ -7,7 +7,13 @@ public abstract class BeliefNode extends QueryNode {
     // Belief nodes can have any other QueryNode as their child
     protected ArrayList<? extends QueryNode> children;
 
-    public void setChildren(ArrayList<? extends QueryNode> list) {
+    public void setChildren(ArrayList<? extends QueryNode> list) throws Exception {
+
+        if (this instanceof NotBeliefNode &&
+                children.size() == 1) {
+            throw new Exception("A NotBeliefNode can have ony a single child!");
+        }
+
         children = list;
     }
 

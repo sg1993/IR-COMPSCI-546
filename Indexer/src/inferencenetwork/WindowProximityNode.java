@@ -17,8 +17,8 @@ public abstract class WindowProximityNode extends ProximityNode {
     // the inverted-lists of children
     protected ArrayList<Integer> docSet = null;
 
-    // Window nodes can only have TermProximityNodes as their children
-    protected ArrayList<TermProximityNode> children;
+    // Window nodes can have any other ProximityNodes as their children
+    protected ArrayList<? extends ProximityNode> children;
 
     // holds the inverted lists of children
     protected ArrayList<InvertedList> childILists = null;
@@ -38,7 +38,19 @@ public abstract class WindowProximityNode extends ProximityNode {
         // TODO Auto-generated constructor stub
     }
 
+    public void setChildren(ArrayList<? extends ProximityNode> list) {
+        children = list;
+
+        // create the inverted list for window-nodes
+        // they are same as traditional inverted lists except that the positions
+        // are really just start-positions of windows
+        createFakeInvertedList();
+    }
+
+    public abstract void createFakeInvertedList();
+
     protected ArrayList<Integer> intersectDocs(ArrayList<InvertedList> iLists) {
+
         ArrayList<Integer> results = new ArrayList<Integer>();
         HashMap<Integer, Integer> counts = new HashMap<Integer, Integer>();
         int numChildren = children.size();
@@ -62,30 +74,13 @@ public abstract class WindowProximityNode extends ProximityNode {
     }
 
     @Override
-    public int nextCandidateDocument() {
-        // return the next doc from docSet since docSet
-        // already has the pre-computed list of documents
-        // that contain atleast one occurrence of the window
-        if (docIndex < docSet.size()) {
-            return docSet.get(docIndex);
-        }
-
-        // else, we have no more candidates.
-        // return MAX_VALUE. the caller will know what to do
-        return Integer.MAX_VALUE;
-    }
-
-    @Override
-    public void skipTo(int docId) {
-        // skip till the docIndex is on a doc with id >= docId
-        while (docIndex < docSet.size() && docSet.get(docIndex) < docId) {
-            docIndex++;
-        }
-    }
-
-    @Override
     public Double score(int docId) {
+
         if (docSet.contains(docId)) {
+            /*
+             * System.out.println(
+             * docId + ": " + windowCounts.get(docId) + ", total: " + collectionFrequency);
+             */
             return evaluator.getDocScoreForQueryWindow(windowCounts.get(docId), docId,
                     collectionFrequency);
         } else {

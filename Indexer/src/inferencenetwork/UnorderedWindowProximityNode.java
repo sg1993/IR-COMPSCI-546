@@ -14,8 +14,7 @@ public class UnorderedWindowProximityNode extends WindowProximityNode {
         super(evaluator, w);
     }
 
-    public void setChildren(ArrayList<TermProximityNode> list) {
-        children = list;
+    public void createFakeInvertedList() {
 
         // create a list of inverted lists of the children nodes (which are
         // TermProxNodes). Use streams coz ... why not?
@@ -28,7 +27,8 @@ public class UnorderedWindowProximityNode extends WindowProximityNode {
         // first intersect the docs to get a candidate list of
         // documents to comb through searching for windows
         docSet = intersectDocs(childILists);
-        System.out.println("the terms appear together in these documents: " + docSet);
+        // System.out.println("the terms appear together in these documents: " +
+        // docSet);
 
         // now that we have the the set of documents to start with,
         // search for the actual windows in these documents
@@ -155,13 +155,22 @@ public class UnorderedWindowProximityNode extends WindowProximityNode {
                 if (endPos - startPos + 1 <= windowSize) {
                     // yay! a window
                     windowCount += 1;
-                    System.out.println(
-                            "Found a window in " + docId + " from " + startPos + " to " + endPos
-                                    + " using: " + localPositionSeen);
+                    /*
+                     * System.out.println(
+                     * "Found a window in " + docId + " from " + startPos + " to " + endPos
+                     * + " using: " + localPositionSeen);
+                     */
 
                     // add all position's used in this window's computation to the
                     // global-position set so that future windows don't use them
                     globalPositionSeen.addAll(localPositionSeen);
+
+                    // add only the start-position of this window to the fake inverted list we're
+                    // creating for this ProximityNode
+                    if (iList == null) {
+                        iList = new InvertedList("<WINDOW_HOLDER_TERM>");
+                    }
+                    iList.addPositionToPosting(docId, startPos);
                 } else {
 
                     /*

@@ -2,12 +2,8 @@ package inferencenetwork;
 
 public class OrBeliefNode extends BeliefNode {
 
-    public OrBeliefNode() {
-        super();
-    }
-
     public Double score(int docId) {
-        double score = 0.0;
+        double score = 1.0;
         for (QueryNode child : children) {
             score *= (1.0 - Math.exp(child.score(docId)));
         }

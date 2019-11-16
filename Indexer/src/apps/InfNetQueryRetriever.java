@@ -1,25 +1,46 @@
 package apps;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Map.Entry;
 
 import index.InvertedFileIndex;
 import inferencenetwork.AndBeliefNode;
 import inferencenetwork.FilterRejectQueryNode;
 import inferencenetwork.FilterRequireQueryNode;
 import inferencenetwork.InferenceNetworkRetriever;
+import inferencenetwork.MaxBeliefNode;
+import inferencenetwork.OrBeliefNode;
 import inferencenetwork.OrderedWindowProximityNode;
+import inferencenetwork.SumBeliefNode;
 import inferencenetwork.TermProximityNode;
+import inferencenetwork.UnorderedWindowProximityNode;
 import retriever.DirichletEvaluator;
 import retriever.Evaluator;
 
 public class InfNetQueryRetriever {
 
+    private static String[] QUERY_SET = { "the king queen royalty", "servant guard soldier",
+            "hope dream sleep", "ghost spirit", "fool jester player", "to be or not to be", "alas",
+            "alas poor", "alas poor yorick", "antony strumpet" };
+
+    // returns spaces needed to pad so that collumns in .trecrun files align
+    private static String prettyPrintSpaces(int lengthNeeded, String whatIHave) {
+        String spaces = "";
+        int len = whatIHave.length();
+        while (len++ <= lengthNeeded)
+            spaces += " ";
+        return spaces;
+    }
+
     public InfNetQueryRetriever() {
         // TODO Auto-generated constructor stub
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
 
         if (args.length != 1) {
             System.out.println("Pass (only) the path to the index (compressed or uncompressed) "
@@ -83,27 +104,207 @@ public class InfNetQueryRetriever {
                 663, 1571, 1227, 2294, 1404, 658, 1483, 164, 518, 209, 400, 1035, 2380, 2282, 321,
                 1994, 553, 771, 394, 1023, 973, 1031, 318, 470, 4572, 2037, 160, 109, 748));
 
-        Evaluator evaluator = new DirichletEvaluator(1500/* mu */, index, docLength);
-
-        OrderedWindowProximityNode ownNode = new OrderedWindowProximityNode(evaluator, 10);
-        ownNode.setChildren(getTermProximityNodesFromQuery("to be or not to be", evaluator, index));
         InferenceNetworkRetriever retriever = new InferenceNetworkRetriever(index);
-        System.out.println(retriever.retrieveQuery(ownNode, 10));
+        DirichletEvaluator evaluator = new DirichletEvaluator(1500/* mu */, index, docLength);
 
-        AndBeliefNode andNode = new AndBeliefNode();
-        andNode.setChildren(
-                getTermProximityNodesFromQuery("the king queen royalty", evaluator, index));
-        // System.out.println(retriever.retrieveQuery(andNode, 10));
+        String runTag = "shibingeorge-ql-dir-mu=1500";
+        ArrayList<String> id = index.getBackingDocumentIDs();
 
-        // test filter nodes
-        TermProximityNode termProximityNode = new TermProximityNode(evaluator,
-                index.getInvertedListForTerm("horatio"));
-        // FilterRequireQueryNode filterRequireQueryNode = new FilterRequireQueryNode(
-        // termProximityNode, ownNode);
-        FilterRejectQueryNode filterNode = new FilterRejectQueryNode(
-                termProximityNode, ownNode);
-        // score only the document that has "horatio" in it
-        System.out.println(retriever.retrieveQuery(filterNode, 10));
+        /*
+         * AND operators on the queries
+         */
+
+        Integer queryNum = 1;
+        String outfile = "C:\\Users\\georg\\motherlode\\UMass\\cs546\\and.trecrun";
+        PrintWriter pWriter;
+        try {
+            pWriter = new PrintWriter(new File(outfile));
+
+            for (String s : QUERY_SET) {
+                AndBeliefNode andBeliefNode = new AndBeliefNode();
+                andBeliefNode.setChildren(getTermProximityNodesFromQuery(s, evaluator,
+                        index));
+                Integer rank = 1;
+                for (Entry<Integer, Double> entry : retriever.retrieveQuery(andBeliefNode,
+                        10)) {
+                    String sceneId = id.get(entry.getKey()).split("#")[1];
+                    String toWriteString = ("Q" + queryNum
+                            + prettyPrintSpaces(3, queryNum.toString())
+                            + "  skip  " + sceneId + prettyPrintSpaces(35, sceneId) + rank
+                            + prettyPrintSpaces(5, rank.toString()) + entry.getValue()
+                            + prettyPrintSpaces(20, entry.getValue().toString()) + runTag + "\n");
+                    pWriter.write(toWriteString);
+                    rank++;
+                }
+                queryNum++;
+            }
+            pWriter.close();
+        } catch (FileNotFoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        /*
+         * OR operator on the queries
+         */
+
+        queryNum = 1;
+        outfile = "C:\\Users\\georg\\motherlode\\UMass\\cs546\\or.trecrun";
+        try {
+            pWriter = new PrintWriter(new File(outfile));
+
+            for (String s : QUERY_SET) {
+                OrBeliefNode orBeliefNode = new OrBeliefNode();
+                orBeliefNode.setChildren(getTermProximityNodesFromQuery(s, evaluator,
+                        index));
+                Integer rank = 1;
+                for (Entry<Integer, Double> entry : retriever.retrieveQuery(orBeliefNode,
+                        10)) {
+                    String sceneId = id.get(entry.getKey()).split("#")[1];
+                    String toWriteString = ("Q" + queryNum
+                            + prettyPrintSpaces(3, queryNum.toString())
+                            + "  skip  " + sceneId + prettyPrintSpaces(35, sceneId) + rank
+                            + prettyPrintSpaces(5, rank.toString()) + entry.getValue()
+                            + prettyPrintSpaces(20, entry.getValue().toString()) + runTag + "\n");
+                    pWriter.write(toWriteString);
+                    rank++;
+                }
+                queryNum++;
+            }
+            pWriter.close();
+        } catch (FileNotFoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        /*
+         * SUM operator on the queries
+         */
+
+        queryNum = 1;
+        outfile = "C:\\Users\\georg\\motherlode\\UMass\\cs546\\sum.trecrun";
+        try {
+            pWriter = new PrintWriter(new File(outfile));
+
+            for (String s : QUERY_SET) {
+                SumBeliefNode sumBeliefNode = new SumBeliefNode();
+                sumBeliefNode.setChildren(getTermProximityNodesFromQuery(s, evaluator,
+                        index));
+                Integer rank = 1;
+                for (Entry<Integer, Double> entry : retriever.retrieveQuery(sumBeliefNode,
+                        10)) {
+                    String sceneId = id.get(entry.getKey()).split("#")[1];
+                    String toWriteString = ("Q" + queryNum
+                            + prettyPrintSpaces(3, queryNum.toString())
+                            + "  skip  " + sceneId + prettyPrintSpaces(35, sceneId) + rank
+                            + prettyPrintSpaces(5, rank.toString()) + entry.getValue()
+                            + prettyPrintSpaces(20, entry.getValue().toString()) + runTag + "\n");
+                    pWriter.write(toWriteString);
+                    rank++;
+                }
+                queryNum++;
+            }
+            pWriter.close();
+        } catch (FileNotFoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        /*
+         * MAX operator on the queries
+         */
+
+        queryNum = 1;
+        outfile = "C:\\Users\\georg\\motherlode\\UMass\\cs546\\max.trecrun";
+        try {
+            pWriter = new PrintWriter(new File(outfile));
+
+            for (String s : QUERY_SET) {
+                MaxBeliefNode maxBeliefNode = new MaxBeliefNode();
+                maxBeliefNode.setChildren(getTermProximityNodesFromQuery(s, evaluator,
+                        index));
+                Integer rank = 1;
+                for (Entry<Integer, Double> entry : retriever.retrieveQuery(maxBeliefNode,
+                        10)) {
+                    String sceneId = id.get(entry.getKey()).split("#")[1];
+                    String toWriteString = ("Q" + queryNum
+                            + prettyPrintSpaces(3, queryNum.toString())
+                            + "  skip  " + sceneId + prettyPrintSpaces(35, sceneId) + rank
+                            + prettyPrintSpaces(5, rank.toString()) + entry.getValue()
+                            + prettyPrintSpaces(20, entry.getValue().toString()) + runTag + "\n");
+                    pWriter.write(toWriteString);
+                    rank++;
+                }
+                queryNum++;
+            }
+            pWriter.close();
+        } catch (FileNotFoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        /*
+         * #od1 operator on the queries
+         */
+        queryNum = 1;
+        outfile = "C:\\Users\\georg\\motherlode\\UMass\\cs546\\od1.trecrun";
+        try {
+            pWriter = new PrintWriter(new File(outfile));
+
+            for (String s : QUERY_SET) {
+                OrderedWindowProximityNode odnProximityNode = new OrderedWindowProximityNode(
+                        evaluator, 1);
+                odnProximityNode.setChildren(getTermProximityNodesFromQuery(s, evaluator, index));
+                Integer rank = 1;
+                for (Entry<Integer, Double> entry : retriever.retrieveQuery(odnProximityNode, 10)) {
+                    String sceneId = id.get(entry.getKey()).split("#")[1];
+                    String toWriteString = ("Q" + queryNum
+                            + prettyPrintSpaces(3, queryNum.toString())
+                            + "  skip  " + sceneId + prettyPrintSpaces(35, sceneId) + rank
+                            + prettyPrintSpaces(5, rank.toString()) + entry.getValue()
+                            + prettyPrintSpaces(20, entry.getValue().toString()) + runTag + "\n");
+                    pWriter.write(toWriteString);
+                    rank++;
+                }
+                queryNum++;
+            }
+            pWriter.close();
+        } catch (FileNotFoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        /*
+         * #uwN operator on the queries
+         */
+        queryNum = 1;
+        outfile = "C:\\Users\\georg\\motherlode\\UMass\\cs546\\uw.trecrun";
+        try {
+            pWriter = new PrintWriter(new File(outfile));
+
+            for (String s : QUERY_SET) {
+                UnorderedWindowProximityNode uwnProximityNode = new UnorderedWindowProximityNode(
+                        evaluator, 3 * s.length());
+                uwnProximityNode.setChildren(getTermProximityNodesFromQuery(s, evaluator, index));
+                Integer rank = 1;
+                for (Entry<Integer, Double> entry : retriever.retrieveQuery(uwnProximityNode, 10)) {
+                    String sceneId = id.get(entry.getKey()).split("#")[1];
+                    String toWriteString = ("Q" + queryNum
+                            + prettyPrintSpaces(3, queryNum.toString())
+                            + "  skip  " + sceneId + prettyPrintSpaces(35, sceneId) + rank
+                            + prettyPrintSpaces(5, rank.toString()) + entry.getValue()
+                            + prettyPrintSpaces(20, entry.getValue().toString()) + runTag + "\n");
+                    pWriter.write(toWriteString);
+                    rank++;
+                }
+                queryNum++;
+            }
+            pWriter.close();
+        } catch (FileNotFoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
     }
 
     private static ArrayList<TermProximityNode> getTermProximityNodesFromQuery(String query,
