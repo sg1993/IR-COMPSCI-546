@@ -14,7 +14,7 @@ public class WeightedSumBeliefNode extends BeliefNode {
         int i = 0;
 
         for (QueryNode child : children) {
-            score += weights[i] * Math.exp(Math.exp(child.score(docId)));
+            score += weights[i] * Math.exp(child.score(docId));
             wsum += weights[i++];
         }
 
