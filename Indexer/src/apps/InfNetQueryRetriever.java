@@ -108,7 +108,6 @@ public class InfNetQueryRetriever {
         InferenceNetworkRetriever retriever = new InferenceNetworkRetriever(index);
         DirichletEvaluator evaluator = new DirichletEvaluator(1500/* mu */, index, docLength);
 
-        String runTag = "shibingeorge-ql-dir-mu=1500";
         ArrayList<String> id = index.getBackingDocumentIDs();
 
         /*
@@ -139,6 +138,7 @@ public class InfNetQueryRetriever {
         Integer queryNum = 1;
         String outfile = "C:\\Users\\georg\\motherlode\\UMass\\cs546\\and.trecrun";
         PrintWriter pWriter;
+        String runTag = "shibingeorge-infnet-and-ql-dir-mu=1500";
         try {
             pWriter = new PrintWriter(new File(outfile));
 
@@ -172,6 +172,7 @@ public class InfNetQueryRetriever {
 
         queryNum = 1;
         outfile = "C:\\Users\\georg\\motherlode\\UMass\\cs546\\or.trecrun";
+        runTag = "shibingeorge-infnet-or-ql-dir-mu=1500";
         try {
             pWriter = new PrintWriter(new File(outfile));
 
@@ -205,6 +206,7 @@ public class InfNetQueryRetriever {
 
         queryNum = 1;
         outfile = "C:\\Users\\georg\\motherlode\\UMass\\cs546\\sum.trecrun";
+        runTag = "shibingeorge-infnet-sum-ql-dir-mu=1500";
         try {
             pWriter = new PrintWriter(new File(outfile));
 
@@ -238,6 +240,7 @@ public class InfNetQueryRetriever {
 
         queryNum = 1;
         outfile = "C:\\Users\\georg\\motherlode\\UMass\\cs546\\max.trecrun";
+        runTag = "shibingeorge-infnet-max-ql-dir-mu=1500";
         try {
             pWriter = new PrintWriter(new File(outfile));
 
@@ -270,6 +273,7 @@ public class InfNetQueryRetriever {
          */
         queryNum = 1;
         outfile = "C:\\Users\\georg\\motherlode\\UMass\\cs546\\od1.trecrun";
+        runTag = "shibingeorge-infnet-od1-ql-dir-mu=1500";
         try {
             pWriter = new PrintWriter(new File(outfile));
 
@@ -301,12 +305,13 @@ public class InfNetQueryRetriever {
          */
         queryNum = 1;
         outfile = "C:\\Users\\georg\\motherlode\\UMass\\cs546\\uw.trecrun";
+        runTag = "shibingeorge-infnet-uw-ql-dir-mu=1500";
         try {
             pWriter = new PrintWriter(new File(outfile));
 
             for (String s : QUERY_SET) {
                 UnorderedWindowProximityNode uwnProximityNode = new UnorderedWindowProximityNode(
-                        evaluator, 3 * s.length());
+                        evaluator, 3 * (s.split("\\s+")).length);
                 uwnProximityNode.setChildren(getTermProximityNodesFromQuery(s, evaluator, index));
                 Integer rank = 1;
                 for (Entry<Integer, Double> entry : retriever.retrieveQuery(uwnProximityNode, 10)) {
