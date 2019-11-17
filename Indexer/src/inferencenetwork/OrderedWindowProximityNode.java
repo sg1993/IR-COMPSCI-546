@@ -96,6 +96,10 @@ public class OrderedWindowProximityNode extends WindowProximityNode {
          * 2) Use the candidate-positions in the first array as the next term and pick
          * another term from the window-query.
          * 3) Repeat until no more terms are left.
+         * 4) Now we have all possible windows but there is double-dipping since we
+         * looked at ALL possible pairs in (1).
+         * 5) The final step is to prune those windows which have already "seen"
+         * positions and thus avoiding double-dipping across windows.
          */
 
         // loop through all candidate docs

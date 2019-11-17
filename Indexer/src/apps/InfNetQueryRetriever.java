@@ -9,9 +9,6 @@ import java.util.Map.Entry;
 
 import index.InvertedFileIndex;
 import inferencenetwork.AndBeliefNode;
-import inferencenetwork.FilterQueryNode;
-import inferencenetwork.FilterRejectQueryNode;
-import inferencenetwork.FilterRequireQueryNode;
 import inferencenetwork.InferenceNetworkRetriever;
 import inferencenetwork.MaxBeliefNode;
 import inferencenetwork.OrBeliefNode;
