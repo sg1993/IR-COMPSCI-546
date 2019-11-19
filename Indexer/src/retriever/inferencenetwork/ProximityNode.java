@@ -1,4 +1,4 @@
-package inferencenetwork;
+package retriever.inferencenetwork;
 
 import index.InvertedList;
 import index.Posting;

@@ -8,16 +8,16 @@ import java.util.Arrays;
 import java.util.Map.Entry;
 
 import index.InvertedFileIndex;
-import inferencenetwork.AndBeliefNode;
-import inferencenetwork.InferenceNetworkRetriever;
-import inferencenetwork.MaxBeliefNode;
-import inferencenetwork.OrBeliefNode;
-import inferencenetwork.OrderedWindowProximityNode;
-import inferencenetwork.SumBeliefNode;
-import inferencenetwork.TermProximityNode;
-import inferencenetwork.UnorderedWindowProximityNode;
 import retriever.DirichletEvaluator;
 import retriever.Evaluator;
+import retriever.inferencenetwork.AndBeliefNode;
+import retriever.inferencenetwork.InferenceNetworkRetriever;
+import retriever.inferencenetwork.MaxBeliefNode;
+import retriever.inferencenetwork.OrBeliefNode;
+import retriever.inferencenetwork.OrderedWindowProximityNode;
+import retriever.inferencenetwork.SumBeliefNode;
+import retriever.inferencenetwork.TermProximityNode;
+import retriever.inferencenetwork.UnorderedWindowProximityNode;
 
 public class InfNetQueryRetriever {
 

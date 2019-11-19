@@ -1,4 +1,4 @@
-package inferencenetwork;
+package retriever.inferencenetwork;
 
 public class OrBeliefNode extends BeliefNode {
 

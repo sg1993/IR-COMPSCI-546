@@ -1,4 +1,4 @@
-package inferencenetwork;
+package retriever.inferencenetwork;
 
 import java.util.AbstractMap;
 import java.util.ArrayList;

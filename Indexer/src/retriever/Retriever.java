@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import index.Index;
-import inferencenetwork.QueryNode;
+import retriever.inferencenetwork.QueryNode;
 
 public abstract class Retriever {
 

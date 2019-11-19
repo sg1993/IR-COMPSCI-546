@@ -1,4 +1,4 @@
-package inferencenetwork;
+package retriever.inferencenetwork;
 
 // normalized sum node
 public class SumBeliefNode extends BeliefNode {

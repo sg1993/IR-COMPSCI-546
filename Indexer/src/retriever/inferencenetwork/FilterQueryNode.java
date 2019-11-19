@@ -1,4 +1,4 @@
-package inferencenetwork;
+package retriever.inferencenetwork;
 
 public abstract class FilterQueryNode extends QueryNode {
 

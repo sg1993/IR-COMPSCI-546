@@ -1,4 +1,4 @@
-package inferencenetwork;
+package retriever.inferencenetwork;
 
 public class WeightedSumBeliefNode extends BeliefNode {
 
