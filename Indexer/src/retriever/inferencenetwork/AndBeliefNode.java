@@ -4,13 +4,14 @@ public class AndBeliefNode extends BeliefNode {
 
     @Override
     public Double score(int docId) {
-        double score = 1.0;
+        double score = 0.0;
 
         for (QueryNode child : children) {
-            score *= Math.exp(child.score(docId));
+            // add up the score in log-space
+            score += child.score(docId);
         }
-        // return scores in log-space
-        return Math.log(score);
+        // return the score which is already in log-space
+        return score;
     }
 
 }
