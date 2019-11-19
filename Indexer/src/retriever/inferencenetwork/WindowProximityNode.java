@@ -6,7 +6,7 @@ import java.util.HashMap;
 
 import index.InvertedList;
 import index.Posting;
-import retriever.Evaluator;
+import retriever.evaluation.Evaluator;
 
 public abstract class WindowProximityNode extends ProximityNode {
 

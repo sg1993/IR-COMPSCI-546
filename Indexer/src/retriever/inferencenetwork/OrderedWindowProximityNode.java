@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 
 import index.InvertedList;
 import index.Posting;
-import retriever.Evaluator;
+import retriever.evaluation.Evaluator;
 
 public class OrderedWindowProximityNode extends WindowProximityNode {
 

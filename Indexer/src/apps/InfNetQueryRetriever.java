@@ -8,8 +8,8 @@ import java.util.Arrays;
 import java.util.Map.Entry;
 
 import index.InvertedFileIndex;
-import retriever.DirichletEvaluator;
-import retriever.Evaluator;
+import retriever.evaluation.DirichletEvaluator;
+import retriever.evaluation.Evaluator;
 import retriever.inferencenetwork.AndBeliefNode;
 import retriever.inferencenetwork.InferenceNetworkRetriever;
 import retriever.inferencenetwork.MaxBeliefNode;

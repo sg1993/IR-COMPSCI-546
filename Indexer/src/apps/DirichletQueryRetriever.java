@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.Map.Entry;
 
 import index.InvertedFileIndex;
-import retriever.DirichletEvaluator;
 import retriever.DocAtATimeRetriever;
+import retriever.evaluation.DirichletEvaluator;
 
 public class DirichletQueryRetriever {
 

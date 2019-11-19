@@ -1,4 +1,4 @@
-package retriever;
+package retriever.evaluation;
 
 import java.util.ArrayList;
 import java.util.HashMap;

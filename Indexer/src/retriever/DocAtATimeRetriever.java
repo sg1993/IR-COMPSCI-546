@@ -14,6 +14,7 @@ import index.InvertedFileIndex;
 import index.InvertedList;
 import index.Posting;
 import reader.Document;
+import retriever.evaluation.Evaluator;
 
 public class DocAtATimeRetriever extends Retriever {
 

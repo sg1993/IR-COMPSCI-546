@@ -1,4 +1,4 @@
-package retriever;
+package retriever.evaluation;
 
 public class RawCountEvaluator extends Evaluator {
 

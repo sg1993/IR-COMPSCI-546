@@ -4,8 +4,8 @@ import java.util.Arrays;
 
 import index.InvertedFileIndex;
 import retriever.DocAtATimeRetriever;
-import retriever.RawCountEvaluator;
 import retriever.Retriever;
+import retriever.evaluation.RawCountEvaluator;
 
 public class TimingExperiment {
 

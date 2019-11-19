@@ -17,8 +17,8 @@ import org.apache.commons.cli.ParseException;
 import index.InvertedFileIndex;
 import index.InvertedList;
 import retriever.DocAtATimeRetriever;
-import retriever.RawCountEvaluator;
 import retriever.Retriever;
+import retriever.evaluation.RawCountEvaluator;
 
 public class QueryRetriever {
 

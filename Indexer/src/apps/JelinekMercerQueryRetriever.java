@@ -5,7 +5,7 @@ import java.util.Map.Entry;
 
 import index.InvertedFileIndex;
 import retriever.DocAtATimeRetriever;
-import retriever.JelinekMercerEvaluator;
+import retriever.evaluation.JelinekMercerEvaluator;
 
 public class JelinekMercerQueryRetriever {
 

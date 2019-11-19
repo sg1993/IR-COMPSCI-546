@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.Map.Entry;
 
 import index.InvertedFileIndex;
-import retriever.BM25Evaluator;
 import retriever.DocAtATimeRetriever;
+import retriever.evaluation.BM25Evaluator;
 
 public class BM25QueryRetriever {
 
