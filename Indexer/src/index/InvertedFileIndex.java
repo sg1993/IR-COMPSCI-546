@@ -1,9 +1,11 @@
 package index;
 
 import java.io.BufferedReader;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.RandomAccessFile;
 import java.util.AbstractMap.SimpleEntry;
@@ -13,6 +15,10 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map.Entry;
 
+import org.apache.commons.io.IOUtils;
+import org.json.JSONObject;
+
+import cluster.DocumentVectorFactory;
 import compression.EmptyCompressor;
 import compression.VByteEncoder;
 import reader.Document;
@@ -56,6 +62,9 @@ public class InvertedFileIndex extends Index {
     // and read from the .metadata file
     private int numDocs = 0;
 
+    // Document-vector factory of this index for clustering
+    DocumentVectorFactory documentVectorFactory = null;
+
     public InvertedFileIndex(String filename) {
         super();
         invListLookup = new HashMap<String, InvertedList>();
@@ -72,6 +81,8 @@ public class InvertedFileIndex extends Index {
             e.printStackTrace();
         }
         pw.write(docs.size() + "\n");
+
+        documentVectorFactory = new DocumentVectorFactory();
 
         for (Document doc : docs) {
             // write the backing document id of each doc into a separate line
@@ -90,6 +101,9 @@ public class InvertedFileIndex extends Index {
                 list.addPositionToPosting(doc.getDocumentUniqueId(), termPosition);
                 invListLookup.put(term, list);
                 termPosition++;
+
+                // add into the document vector of this document
+                documentVectorFactory.addTermToDocumentVector(doc.getDocumentUniqueId(), term);
             }
         }
 
@@ -517,5 +531,56 @@ public class InvertedFileIndex extends Index {
         }
 
         return backingDocumentIDs;
+    }
+
+    public void writeDocumentVectorsToJSON() {
+        assert documentVectorFactory != null;
+
+        // write to index's path with a ".docvec.json" extension
+        String filename = indexFileNameString + ".docvec.json";
+
+        JSONObject jsonObject = documentVectorFactory.JSONifySelf();
+
+        PrintWriter pw;
+        try {
+            pw = new PrintWriter(filename);
+            pw.write(jsonObject.toString(2));
+            pw.close();
+        } catch (FileNotFoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
+
+    public DocumentVectorFactory getDocumentVectorsFromJSON() {
+
+        if (documentVectorFactory == null) {
+            documentVectorFactory = new DocumentVectorFactory();
+            InputStream is;
+            String filename = indexFileNameString + ".docvec.json";
+            System.out.println(filename);
+            try {
+                is = new FileInputStream(filename);
+                String jsonTxt = IOUtils.toString(is, "UTF-8");
+                JSONObject jsonObject = new JSONObject(jsonTxt);
+
+                for (String scene : jsonObject.keySet()) {
+                    int docId = Integer.parseInt(scene);
+                    JSONObject bagOfWords = (JSONObject) jsonObject.get(scene);
+                    for (String term : bagOfWords.keySet()) {
+                        int termFrequency = bagOfWords.getInt(term);
+                        documentVectorFactory.addTermToDocumentVector(docId, term, termFrequency);
+                    }
+                }
+            } catch (FileNotFoundException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+
+        return documentVectorFactory;
     }
 }

@@ -1,7 +1,6 @@
 package test;
 
 import java.util.HashMap;
-import java.util.Spliterator;
 
 public class UnorderedWindowTest {
 

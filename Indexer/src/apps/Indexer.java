@@ -134,6 +134,7 @@ public class Indexer {
             index.createIndexFromDocumentStore(sceneReader.getDocuments());
             // index.printSelf();
             index.writeSelfToDisk(compressIndex);
+            index.writeDocumentVectorsToJSON();
 
         } else if (completeInMemoryIndex) {
             // construct in-memory index from file on disk
