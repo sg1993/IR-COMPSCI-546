@@ -1,16 +1,17 @@
 package cluster;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 
 public class Cluster {
 
     int clusterId;
 
-    Linkage linkage;
+    private Linkage linkage;
 
-    Similarity similarityMethod;
+    private Similarity similarityMethod;
 
-    ArrayList<DocumentVector> documents;
+    private ArrayList<DocumentVector> documents;
 
     private DocumentVector centroidDocumentVector;
 
@@ -26,10 +27,18 @@ public class Cluster {
 
         int numDocsInCluster = documents.size();
 
+        // go through all the terms in the centroid-vector and the incoming document
+        HashSet<String> termSet = new HashSet<String>() {
+            {
+                addAll(centroidDocumentVector.getTerms());
+                addAll(documentVector.getTerms());
+            }
+        };
+
         // update the centroid vector for this cluster
-        for (String term : documentVector.getTerms()) {
+        for (String term : termSet) {
             // get the averaged-value for this term before adding the incoming vector
-            int count = centroidDocumentVector.getTermCount(term);
+            double count = centroidDocumentVector.getTermCount(term);
             count *= numDocsInCluster;
 
             // add the incoming vector's count for this term for the new centroid

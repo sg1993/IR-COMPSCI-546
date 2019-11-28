@@ -32,8 +32,8 @@ public class CosineSimilarity extends Similarity {
             double tf2 = (double) (d2.getTermCount(term));
 
             // the idf-component is common for both vectors for this term
-            double idf = ((double) index.getNumDocs() + 1.0)
-                    / ((double) (index.getDocumentFrequencyForTerm(term)) + 0.5);
+            double idf = Math.log(((double) index.getNumDocs() + 1.0)
+                    / ((double) (index.getDocumentFrequencyForTerm(term)) + 0.5));
 
             double tfIdf1 = tf1 * idf;
             double tfIdf2 = tf2 * idf;

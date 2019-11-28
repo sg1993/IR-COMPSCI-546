@@ -98,7 +98,7 @@ public class ClusteringApp {
                     for (DocumentVector document : cluster.getDocumentsInCluster()) {
                         printWriter.write(cluster.getClusterId()
                                 + prettyPrintSpaces(10, cluster.getClusterId().toString())
-                                + docIDs.get(document.getDocId()) + "\n");
+                                + docIDs.get(document.getDocId()).split("#")[1] + "\n");
                     }
                 });
                 printWriter.close();
