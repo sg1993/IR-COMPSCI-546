@@ -18,4 +18,6 @@ public abstract class Index {
 
     public abstract ArrayList<String> getBackingDocumentIDs();
 
+    public abstract Double getPriorForDocument();
+
 }

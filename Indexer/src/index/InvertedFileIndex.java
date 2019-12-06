@@ -583,4 +583,10 @@ public class InvertedFileIndex extends Index {
 
         return documentVectorFactory;
     }
+
+    @Override
+    public Double getPriorForDocument() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 }
