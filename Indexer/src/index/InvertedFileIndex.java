@@ -65,6 +65,9 @@ public class InvertedFileIndex extends Index {
     // Document-vector factory of this index for clustering
     DocumentVectorFactory documentVectorFactory = null;
 
+    // the file to load the priors from
+    private String priorFile = null;
+
     public InvertedFileIndex(String filename) {
         super();
         invListLookup = new HashMap<String, InvertedList>();
@@ -584,9 +587,32 @@ public class InvertedFileIndex extends Index {
         return documentVectorFactory;
     }
 
-    @Override
-    public Double getPriorForDocument() {
-        // TODO Auto-generated method stub
-        return null;
+    public void setPriorTable(String priorFileName) {
+        priorFile = priorFileName;
     }
+
+    @Override
+    public Double getPriorForDocument(int docId) {
+
+        Double priorValue = null;
+
+        try {
+            RandomAccessFile priorReader = new RandomAccessFile(priorFile, "r");
+
+            // each document's prior value is in a line ordered by the document-id
+            // seek to offset in the file and just read 8 bytes
+            // i.e. the size of a double value
+            priorReader.seek(docId * 8);
+            priorValue = priorReader.readDouble();
+            priorReader.close();
+        } catch (Exception e) {
+            if (priorFile == null)
+                System.out.println("Please set the location to the file that has "
+                        + "the prior in it by calling <Index>.setPriorTable()");
+            e.printStackTrace();
+        }
+
+        return priorValue;
+    }
+
 }

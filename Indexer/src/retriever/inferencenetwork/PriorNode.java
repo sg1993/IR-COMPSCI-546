@@ -21,7 +21,7 @@ public class PriorNode extends QueryNode {
 
     @Override
     public Double score(int docId) {
-        return index.getPriorForDocument();
+        return index.getPriorForDocument(docId);
     }
 
     @Override
