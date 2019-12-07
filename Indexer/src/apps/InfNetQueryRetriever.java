@@ -25,19 +25,6 @@ public class InfNetQueryRetriever {
             "hope dream sleep", "ghost spirit", "fool jester player", "to be or not to be", "alas",
             "alas poor", "alas poor yorick", "antony strumpet" };
 
-    // returns spaces needed to pad so that columns in .trecrun files align
-    private static String prettyPrintSpaces(int lengthNeeded, String whatIHave) {
-        String spaces = "";
-        int len = whatIHave.length();
-        while (len++ <= lengthNeeded)
-            spaces += " ";
-        return spaces;
-    }
-
-    public InfNetQueryRetriever() {
-        // TODO Auto-generated constructor stub
-    }
-
     public static void main(String[] args) throws Exception {
 
         if (args.length != 1) {
@@ -118,11 +105,13 @@ public class InfNetQueryRetriever {
          * all other docs.
          * OrderedWindowProximityNode fnode = new OrderedWindowProximityNode(evaluator,
          * 1);
-         * fnode.setChildren(getTermProximityNodesFromQuery("same enter launce",
+         * fnode.setChildren(UtilityFunctions.
+         * getTermProximityNodesFromQuery("same enter launce",
          * evaluator, index));
          * OrderedWindowProximityNode qnode = new OrderedWindowProximityNode(evaluator,
          * 1);
-         * qnode.setChildren(getTermProximityNodesFromQuery("when a man", evaluator,
+         * qnode.setChildren(UtilityFunctions.
+         * getTermProximityNodesFromQuery("when a man", evaluator,
          * index));
          * FilterQueryNode node = new FilterRejectQueryNode(fnode, qnode);
          * System.out.println(retriever.retrieveQuery(node, 10));
@@ -141,17 +130,21 @@ public class InfNetQueryRetriever {
 
             for (String s : QUERY_SET) {
                 AndBeliefNode andBeliefNode = new AndBeliefNode();
-                andBeliefNode.setChildren(getTermProximityNodesFromQuery(s, evaluator,
-                        index));
+                andBeliefNode
+                        .setChildren(UtilityFunctions.getTermProximityNodesFromQuery(s, evaluator,
+                                index));
                 Integer rank = 1;
                 for (Entry<Integer, Double> entry : retriever.retrieveQuery(andBeliefNode,
                         10)) {
                     String sceneId = id.get(entry.getKey()).split("#")[1];
                     String toWriteString = ("Q" + queryNum
-                            + prettyPrintSpaces(3, queryNum.toString())
-                            + "  skip  " + sceneId + prettyPrintSpaces(35, sceneId) + rank
-                            + prettyPrintSpaces(5, rank.toString()) + entry.getValue()
-                            + prettyPrintSpaces(20, entry.getValue().toString()) + runTag + "\n");
+                            + UtilityFunctions.prettyPrintSpaces(3, queryNum.toString())
+                            + "  skip  " + sceneId + UtilityFunctions.prettyPrintSpaces(35, sceneId)
+                            + rank
+                            + UtilityFunctions.prettyPrintSpaces(5, rank.toString())
+                            + entry.getValue()
+                            + UtilityFunctions.prettyPrintSpaces(20, entry.getValue().toString())
+                            + runTag + "\n");
                     pWriter.write(toWriteString);
                     rank++;
                 }
@@ -175,17 +168,25 @@ public class InfNetQueryRetriever {
 
             for (String s : QUERY_SET) {
                 OrBeliefNode orBeliefNode = new OrBeliefNode();
-                orBeliefNode.setChildren(getTermProximityNodesFromQuery(s, evaluator,
-                        index));
+                orBeliefNode
+                        .setChildren(UtilityFunctions.getTermProximityNodesFromQuery(s, evaluator,
+                                index));
                 Integer rank = 1;
                 for (Entry<Integer, Double> entry : retriever.retrieveQuery(orBeliefNode,
                         10)) {
                     String sceneId = id.get(entry.getKey()).split("#")[1];
                     String toWriteString = ("Q" + queryNum
-                            + prettyPrintSpaces(3, queryNum.toString())
-                            + "  skip  " + sceneId + prettyPrintSpaces(35, sceneId) + rank
-                            + prettyPrintSpaces(5, rank.toString()) + entry.getValue()
-                            + prettyPrintSpaces(20, entry.getValue().toString()) + runTag + "\n");
+                            + UtilityFunctions.prettyPrintSpaces(3,
+                                    queryNum.toString())
+                            + "  skip  " + sceneId
+                            + UtilityFunctions.prettyPrintSpaces(35, sceneId)
+                            + rank
+                            + UtilityFunctions.prettyPrintSpaces(5,
+                                    rank.toString())
+                            + entry.getValue()
+                            + UtilityFunctions.prettyPrintSpaces(20,
+                                    entry.getValue().toString())
+                            + runTag + "\n");
                     pWriter.write(toWriteString);
                     rank++;
                 }
@@ -209,17 +210,25 @@ public class InfNetQueryRetriever {
 
             for (String s : QUERY_SET) {
                 SumBeliefNode sumBeliefNode = new SumBeliefNode();
-                sumBeliefNode.setChildren(getTermProximityNodesFromQuery(s, evaluator,
-                        index));
+                sumBeliefNode
+                        .setChildren(UtilityFunctions.getTermProximityNodesFromQuery(s, evaluator,
+                                index));
                 Integer rank = 1;
                 for (Entry<Integer, Double> entry : retriever.retrieveQuery(sumBeliefNode,
                         10)) {
                     String sceneId = id.get(entry.getKey()).split("#")[1];
                     String toWriteString = ("Q" + queryNum
-                            + prettyPrintSpaces(3, queryNum.toString())
-                            + "  skip  " + sceneId + prettyPrintSpaces(35, sceneId) + rank
-                            + prettyPrintSpaces(5, rank.toString()) + entry.getValue()
-                            + prettyPrintSpaces(20, entry.getValue().toString()) + runTag + "\n");
+                            + UtilityFunctions.prettyPrintSpaces(3,
+                                    queryNum.toString())
+                            + "  skip  " + sceneId
+                            + UtilityFunctions.prettyPrintSpaces(35, sceneId)
+                            + rank
+                            + UtilityFunctions.prettyPrintSpaces(5,
+                                    rank.toString())
+                            + entry.getValue()
+                            + UtilityFunctions.prettyPrintSpaces(20,
+                                    entry.getValue().toString())
+                            + runTag + "\n");
                     pWriter.write(toWriteString);
                     rank++;
                 }
@@ -243,17 +252,25 @@ public class InfNetQueryRetriever {
 
             for (String s : QUERY_SET) {
                 MaxBeliefNode maxBeliefNode = new MaxBeliefNode();
-                maxBeliefNode.setChildren(getTermProximityNodesFromQuery(s, evaluator,
-                        index));
+                maxBeliefNode
+                        .setChildren(UtilityFunctions.getTermProximityNodesFromQuery(s, evaluator,
+                                index));
                 Integer rank = 1;
                 for (Entry<Integer, Double> entry : retriever.retrieveQuery(maxBeliefNode,
                         10)) {
                     String sceneId = id.get(entry.getKey()).split("#")[1];
                     String toWriteString = ("Q" + queryNum
-                            + prettyPrintSpaces(3, queryNum.toString())
-                            + "  skip  " + sceneId + prettyPrintSpaces(35, sceneId) + rank
-                            + prettyPrintSpaces(5, rank.toString()) + entry.getValue()
-                            + prettyPrintSpaces(20, entry.getValue().toString()) + runTag + "\n");
+                            + UtilityFunctions.prettyPrintSpaces(3,
+                                    queryNum.toString())
+                            + "  skip  " + sceneId
+                            + UtilityFunctions.prettyPrintSpaces(35, sceneId)
+                            + rank
+                            + UtilityFunctions.prettyPrintSpaces(5,
+                                    rank.toString())
+                            + entry.getValue()
+                            + UtilityFunctions.prettyPrintSpaces(20,
+                                    entry.getValue().toString())
+                            + runTag + "\n");
                     pWriter.write(toWriteString);
                     rank++;
                 }
@@ -277,15 +294,23 @@ public class InfNetQueryRetriever {
             for (String s : QUERY_SET) {
                 OrderedWindowProximityNode odnProximityNode = new OrderedWindowProximityNode(
                         evaluator, 1);
-                odnProximityNode.setChildren(getTermProximityNodesFromQuery(s, evaluator, index));
+                odnProximityNode.setChildren(
+                        UtilityFunctions.getTermProximityNodesFromQuery(s, evaluator, index));
                 Integer rank = 1;
                 for (Entry<Integer, Double> entry : retriever.retrieveQuery(odnProximityNode, 10)) {
                     String sceneId = id.get(entry.getKey()).split("#")[1];
                     String toWriteString = ("Q" + queryNum
-                            + prettyPrintSpaces(3, queryNum.toString())
-                            + "  skip  " + sceneId + prettyPrintSpaces(35, sceneId) + rank
-                            + prettyPrintSpaces(5, rank.toString()) + entry.getValue()
-                            + prettyPrintSpaces(20, entry.getValue().toString()) + runTag + "\n");
+                            + UtilityFunctions.prettyPrintSpaces(3,
+                                    queryNum.toString())
+                            + "  skip  " + sceneId
+                            + UtilityFunctions.prettyPrintSpaces(35, sceneId)
+                            + rank
+                            + UtilityFunctions.prettyPrintSpaces(5,
+                                    rank.toString())
+                            + entry.getValue()
+                            + UtilityFunctions.prettyPrintSpaces(20,
+                                    entry.getValue().toString())
+                            + runTag + "\n");
                     pWriter.write(toWriteString);
                     rank++;
                 }
@@ -309,15 +334,19 @@ public class InfNetQueryRetriever {
             for (String s : QUERY_SET) {
                 UnorderedWindowProximityNode uwnProximityNode = new UnorderedWindowProximityNode(
                         evaluator, 3 * (s.split("\\s+")).length);
-                uwnProximityNode.setChildren(getTermProximityNodesFromQuery(s, evaluator, index));
+                uwnProximityNode.setChildren(
+                        UtilityFunctions.getTermProximityNodesFromQuery(s, evaluator, index));
                 Integer rank = 1;
                 for (Entry<Integer, Double> entry : retriever.retrieveQuery(uwnProximityNode, 10)) {
                     String sceneId = id.get(entry.getKey()).split("#")[1];
                     String toWriteString = ("Q" + queryNum
-                            + prettyPrintSpaces(3, queryNum.toString())
-                            + "  skip  " + sceneId + prettyPrintSpaces(35, sceneId) + rank
-                            + prettyPrintSpaces(5, rank.toString()) + entry.getValue()
-                            + prettyPrintSpaces(20, entry.getValue().toString()) + runTag + "\n");
+                            + UtilityFunctions.prettyPrintSpaces(3, queryNum.toString())
+                            + "  skip  " + sceneId + UtilityFunctions.prettyPrintSpaces(35, sceneId)
+                            + rank
+                            + UtilityFunctions.prettyPrintSpaces(5, rank.toString())
+                            + entry.getValue()
+                            + UtilityFunctions.prettyPrintSpaces(20, entry.getValue().toString())
+                            + runTag + "\n");
                     pWriter.write(toWriteString);
                     rank++;
                 }
@@ -331,18 +360,4 @@ public class InfNetQueryRetriever {
 
     }
 
-    private static ArrayList<TermProximityNode> getTermProximityNodesFromQuery(String query,
-            Evaluator evaluator, InvertedFileIndex index) {
-
-        ArrayList<TermProximityNode> list = new ArrayList<TermProximityNode>();
-        String[] terms = query.split("\\s+");
-
-        for (String term : terms) {
-            TermProximityNode node = new TermProximityNode(evaluator,
-                    index.getInvertedListForTerm(term));
-            list.add(node);
-        }
-
-        return list;
-    }
 }
