@@ -14,7 +14,7 @@ public class PriorNode extends QueryNode {
 
     @Override
     public int nextCandidateDocument() {
-        // a prior node has documents that it "wants" to score
+        // a prior-node has no documents that it "wants" to score
         // it just scores whatever document you throw at it!
         return Integer.MAX_VALUE;
     }

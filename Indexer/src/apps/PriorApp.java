@@ -80,7 +80,7 @@ public class PriorApp {
 
             // write the priors to a file
             try {
-                RandomAccessFile binaryFile = new RandomAccessFile("uniform_dist.prior", "rw");
+                RandomAccessFile binaryFile = new RandomAccessFile("uniform.prior", "rw");
                 // write the same uniform probability for all documents
                 double uniform = Math.log(1.0 / index.getNumDocs());
                 for (int i = 0; i < index.getNumDocs(); i++) {
@@ -106,17 +106,15 @@ public class PriorApp {
                     rand[i] = Math.log(rand[i]);
                 }
 
-                binaryFile = new RandomAccessFile("rand_dist.prior", "rw");
+                binaryFile = new RandomAccessFile("random.prior", "rw");
                 for (int i = 0; i < index.getNumDocs(); i++) {
                     binaryFile.writeDouble(rand[i]);
                 }
 
                 binaryFile.close();
             } catch (FileNotFoundException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             } catch (IOException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
         } else if (runInfNetEvaluation) {
@@ -216,7 +214,7 @@ public class PriorApp {
 
             // set the prior-filename in the index
             // so that it can lookup prior values
-            // index.setPriorTable(priorFileName);
+            index.setPriorTable(priorFileName);
 
             // there is only one query to run
             String query = "the king queen royalty";
@@ -236,7 +234,7 @@ public class PriorApp {
             andBeliefNode.setChildren(children);
 
             Integer rank = 1;
-            String runTag = "shibingeorge-infnet-and-ql-dir-mu=1500" + priorFileName;
+            String runTag = "shibingeorge-infnet-and-ql-dir-mu=1500-" + priorFileName;
 
             PrintWriter pWriter = new PrintWriter(new File(priorFileName + ".trecrun"));
 
@@ -244,9 +242,11 @@ public class PriorApp {
             for (Entry<Integer, Double> entry : retriever.retrieveQuery(andBeliefNode, 10)) {
                 String sceneId = id.get(entry.getKey()).split("#")[1];
                 String toWriteString = ("Q1        "
-                        + "  skip  " + sceneId + UtilityFunctions.prettyPrintSpaces(35, sceneId) + rank
+                        + "  skip  " + sceneId + UtilityFunctions.prettyPrintSpaces(35, sceneId)
+                        + rank
                         + UtilityFunctions.prettyPrintSpaces(5, rank.toString()) + entry.getValue()
-                        + UtilityFunctions.prettyPrintSpaces(20, entry.getValue().toString()) + runTag + "\n");
+                        + UtilityFunctions.prettyPrintSpaces(20, entry.getValue().toString())
+                        + runTag + "\n");
                 pWriter.write(toWriteString);
                 rank++;
             }
