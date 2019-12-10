@@ -587,12 +587,8 @@ public class InvertedFileIndex extends Index {
         return documentVectorFactory;
     }
 
-    public void setPriorTable(String priorFileName) {
-        priorFile = priorFileName;
-    }
-
     @Override
-    public Double getPriorForDocument(int docId) {
+    public Double getPriorForDocument(int docId, String priorFile) {
 
         Double priorValue = null;
 
@@ -606,9 +602,6 @@ public class InvertedFileIndex extends Index {
             priorValue = priorReader.readDouble();
             priorReader.close();
         } catch (Exception e) {
-            if (priorFile == null)
-                System.out.println("Please set the location to the file that has "
-                        + "the prior in it by calling <Index>.setPriorTable()");
             e.printStackTrace();
         }
 

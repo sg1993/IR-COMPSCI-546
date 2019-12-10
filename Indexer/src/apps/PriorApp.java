@@ -212,13 +212,9 @@ public class PriorApp {
 
             ArrayList<String> id = index.getBackingDocumentIDs();
 
-            // set the prior-filename in the index
-            // so that it can lookup prior values
-            index.setPriorTable(priorFileName);
-
             // there is only one query to run
             String query = "the king queen royalty";
-            PriorNode priorNode = new PriorNode(index);
+            PriorNode priorNode = new PriorNode(index, priorFileName);
 
             ArrayList<QueryNode> children = new ArrayList<QueryNode>();
 
