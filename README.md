@@ -1,2 +1,15 @@
-# IR-COMPSCI-546
-Applied Information Retrieval, Fall 2019 @ UMass
+# elgoog
+
+**elgoog** is a (basic) document-search and query-retrieval engine that I made for the Applied Information Retrieval (CS546, Fall-2019) class at UMass-Amherst.
+
+**elgoog** uses [inverted-indexes](https://github.com/sg1993/elgoog/blob/master/elgoog/src/index/InvertedFileIndex.java) for fast query lookup.
+
+It also support phrase operators (like ordered and unordered windows, exact phrase matches) by using a [Bayesian inference network model](https://github.com/sg1993/elgoog/tree/master/elgoog/src/retriever/inferencenetwork) for query retrieval.
+
+**elgoog** currently uses 4 scoring mechanisms: 
+1) raw-count
+2) [BM-25](https://github.com/sg1993/elgoog/blob/master/elgoog/src/retriever/evaluation/BM25Evaluator.java)
+3) Query likelihood using [Jelenik Mercer smoothing](https://github.com/sg1993/elgoog/blob/master/elgoog/src/retriever/evaluation/JelinekMercerEvaluator.java)
+4) Query likelihood using [Dirichlet smoothing](https://github.com/sg1993/elgoog/blob/master/elgoog/src/retriever/evaluation/DirichletEvaluator.java)
+
+And yes, **elgoog** is a play on **Google**!
