@@ -1,6 +1,6 @@
 # elgoog
 
-**elgoog** is a (basic) document-search and query-retrieval engine that I made for the Applied Information Retrieval (CS546, Fall-2019) class at UMass-Amherst.
+**elgoog** is a (basic) document-search and query-retrieval engine that I made for the [Applied Information Retrieval (CS546, Fall-2019)](http://ciir.cs.umass.edu/~dfisher/cs546/) class at UMass-Amherst.
 
 **elgoog** uses [inverted-indexes](https://github.com/sg1993/elgoog/blob/master/elgoog/src/index/InvertedFileIndex.java) for fast query lookup.
 
