@@ -11,5 +11,3 @@ It also support phrase operators (like ordered and unordered windows, exact phra
 2) [BM-25](https://github.com/sg1993/elgoog/blob/master/elgoog/src/retriever/evaluation/BM25Evaluator.java)
 3) Query likelihood using [Jelenik Mercer smoothing](https://github.com/sg1993/elgoog/blob/master/elgoog/src/retriever/evaluation/JelinekMercerEvaluator.java)
 4) Query likelihood using [Dirichlet smoothing](https://github.com/sg1993/elgoog/blob/master/elgoog/src/retriever/evaluation/DirichletEvaluator.java)
-
-And yes, **elgoog** is a play on **Google**!
