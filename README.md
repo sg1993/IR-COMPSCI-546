@@ -4,7 +4,7 @@
 
 **elgoog** uses [inverted-indexes](https://github.com/sg1993/elgoog/blob/master/elgoog/src/index/InvertedFileIndex.java) for fast query lookup.
 
-It also support phrase operators (like ordered and unordered windows, exact phrase matches) by using a [Bayesian inference network model](https://github.com/sg1993/elgoog/tree/master/elgoog/src/retriever/inferencenetwork) for query retrieval.
+It also supports phrase operators (like ordered and unordered windows or exact phrase matches) by using a [Bayesian inference network model](https://github.com/sg1993/elgoog/tree/master/elgoog/src/retriever/inferencenetwork) for query retrieval.
 
 **elgoog** currently uses 4 scoring mechanisms: 
 1) raw-count
