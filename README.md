@@ -2,7 +2,7 @@
 
 **elgoog** is a (basic) document-search and query-retrieval engine that I developed for the [Applied Information Retrieval (CS546, Fall-2019)](http://ciir.cs.umass.edu/~dfisher/cs546/) class at [UMass, Amherst](https://www.cics.umass.edu/).
 
-**elgoog** uses [inverted-indexes](https://github.com/sg1993/elgoog/blob/master/elgoog/src/index/InvertedFileIndex.java) for fast query lookup.
+**elgoog** uses [inverted-index](https://github.com/sg1993/elgoog/blob/master/elgoog/src/index/InvertedFileIndex.java) for fast query lookup.
 
 It also supports phrase operators (like [ordered](https://github.com/sg1993/elgoog/blob/master/elgoog/src/retriever/inferencenetwork/OrderedWindowProximityNode.java) and [unordered](https://github.com/sg1993/elgoog/blob/master/elgoog/src/retriever/inferencenetwork/UnorderedWindowProximityNode.java) windows or exact phrase matches (which is same as ordered window operator with no separation between the terms)) by using a [Bayesian inference network model](https://github.com/sg1993/elgoog/tree/master/elgoog/src/retriever/inferencenetwork) for query retrieval.
 
